@@ -1,0 +1,7 @@
+Reference Coordinates (A, B, and C for grid; A and B for strip)
+
+HUP64 (8x8 Grid): <77 170 81> <65 106 112> <104 121 158>
+HUP65 (8x8 Grid): <196 85 98> <185 145 66> <169 176 126>
+HUP72 (1x6 Strip): <229 263 159> <264 170 164>
+HUP86 (8x8 Grid): <80 146 90> <99 144 143> <67 77 91>
+HUP87 (8x8 Grid): <73 144 85> <64 78 105> <104 173 125>
