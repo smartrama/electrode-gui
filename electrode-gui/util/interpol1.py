@@ -64,13 +64,13 @@ def interpol(coor1, coor2, coor3, delta):
 			new_corr = np.add(A, delta*j*(unit_B2C))
 			j += 1
 	else:
-		while np.all(np.less_equal(new_corr[1], B[1])):
-			while np.all(np.less_equal(new_corr, C)):
+		while np.all(np.less_equal(new_corr, C)):
+			while np.all(np.less_equal(new_corr[1], B[1])):
 				elec_coor.append(totuple(new_corr))
 				names.append("GRID %d" % i)
-				new_corr = np.add(new_corr, delta*(unit_B2C))
+				new_corr = np.add(new_corr, delta*(unit_A2B))
 				i += 1
-			new_corr = np.add(A, delta*j*(unit_A2B))
+			new_corr = np.add(A, delta*j*(unit_B2C))
 			j += 1
 	pairs = dict(zip(names, elec_coor))
 	return pairs
