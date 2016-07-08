@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 def normalize(v):
 # This is a cheeky little subfunction to make unit vectors.
@@ -15,7 +14,7 @@ def totuple(a):
     except TypeError:
         return a
 
-def interpol(coor1, coor2, coor3, delta):
+def interpol(coor1, coor2, coor3, m, n):
 	# This is the main function that interpolates the coordinates of each of the electrodes in a grid using the coordinates 
 	# of three of the grid corners.
 
@@ -59,15 +58,17 @@ def interpol(coor1, coor2, coor3, delta):
 	elec_coor.append(totuple(new_corr))
 	count = 1
 	names.append("GRID %d" % count)
-	for j in range(int(math.ceil(mag_B2C/delta))):
-		for i in range(int(mag_A2B/delta)):
-			new_corr = np.add(new_corr, delta*(unit_A2B))
+	for j in range(n):
+		for i in range(m-1):
+			new_corr = np.add(new_corr, (mag_A2B/(m-1))*(unit_A2B))
 			elec_coor.append(totuple(new_corr))
 			count += 1
 			names.append("GRID %d" % count)
-		new_corr = np.add(A, delta*(j+1)*(unit_B2C))
+		new_corr = np.add(A, (mag_B2C/(n-1))*(j+1)*(unit_B2C))
 		elec_coor.append(totuple(new_corr))
 		count += 1
 		names.append("GRID %d" % count)
+	names = names[0:-1]
+	elec_coor = elec_coor[0:-1]
 	pairs = dict(zip(names, elec_coor))
 	return pairs
