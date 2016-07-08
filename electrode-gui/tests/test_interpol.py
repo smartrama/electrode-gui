@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ''' This script tests interpol.py utility function that interpolates all electrode grids in a strip or grid configuration.
 
 It takes as inputs three sample voxel coordinates representing the oriented corners of the grid as well as the path to the electrode segmentation file to use to map the interpolation.
@@ -11,13 +12,14 @@ import sys
 sys.path.append(path.abspath('../util'))
 
 import unittest
+import numpy as np
 import nibabel as nib
 import json
 
-from interpol import interpol
+from interpol_best import interpol
 
 # Set filepath to data
-DATA_DIR = '~/gdrive/RAM_GUI/electrode-gui/data'
+DATA_DIR = '~/Documents/Litt_Lab/HUP64'
 
 
 class TestInterpolation(unittest.TestCase):
@@ -64,7 +66,8 @@ class TestInterpolation(unittest.TestCase):
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
                             ied)
-
+            print pairs
+            
             # Create spheres of radius
             for k,v in pairs.items():
                 res[v[0]-radius:v[0]+radius,
@@ -73,10 +76,11 @@ class TestInterpolation(unittest.TestCase):
 
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
-            nib.save(res_nifti,os.path.expanduser(out_filename))
+            nib.save(res_nifti,path.expanduser(out_filename))
 
             return True
-        except Exception:
+        except Exception, e:
+            print str(e)
             return False
 
     def test_HUP64(self):

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 def normalize(v):
 # This is a cheeky little subfunction to make unit vectors.
@@ -51,14 +52,14 @@ def interpol(coor1, coor2, coor3, delta):
 	unit_B2C = normalize(B2C)
 	mag_A2B = np.linalg.norm(A2B)
 	mag_B2C = np.linalg.norm(B2C)
-	# Use while loops to deduce locations of electrodes.
+	# Use for loops to deduce locations of electrodes.
 	names = []
 	elec_coor = []
 	new_corr = A
 	elec_coor.append(totuple(new_corr))
 	count = 1
 	names.append("GRID %d" % count)
-	for j in range(int(mag_B2C/delta)+1):
+	for j in range(int(math.ceil(mag_B2C/delta))):
 		for i in range(int(mag_A2B/delta)):
 			new_corr = np.add(new_corr, delta*(unit_A2B))
 			elec_coor.append(totuple(new_corr))
@@ -68,7 +69,5 @@ def interpol(coor1, coor2, coor3, delta):
 		elec_coor.append(totuple(new_corr))
 		count += 1
 		names.append("GRID %d" % count)
-	elec_coor = elec_coor[0:-1]
-	names = names[0:-1]
 	pairs = dict(zip(names, elec_coor))
 	return pairs
