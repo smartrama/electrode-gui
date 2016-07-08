@@ -16,10 +16,10 @@ import numpy as np
 import nibabel as nib
 import json
 
-from interpol_best import interpol
+from interpol import interpol
 
 # Set filepath to data
-DATA_DIR = '~/Documents/Litt_Lab/HUP64'
+DATA_DIR = '~/Documents/Litt_Lab/HUP65'
 
 
 class TestInterpolation(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestInterpolation(unittest.TestCase):
     def load_data(self):
         """returns the JSON data as a dictionary
 
-        Takes in coordinates and ied from 5 sample patients saved in test_coords.json file located in the same folder as this unit test.
+        Takes in coordinates and grid size from 5 sample patients saved in test_coords.json file located in the same folder as this unit test.
         """
         with open('test_coords.json') as data_file:
             data = json.load(data_file)
@@ -63,7 +63,7 @@ class TestInterpolation(unittest.TestCase):
             grid = data[patient_id]["1"]["grid_config"]
             N = int(grid.split('x')[0])
             M = int(grid.split('x')[1])
-            radius = 0.2 * ied
+            radius = 0.2 * 10
             pairs = interpol(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
@@ -101,4 +101,4 @@ class TestInterpolation(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestInterpolation()
-    ti.test_HUP64()
+    ti.test_HUP65()
