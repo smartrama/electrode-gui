@@ -60,14 +60,15 @@ class TestInterpolation(unittest.TestCase):
             out_filename = seg_filename[:-35] + '%s_interpol.nii.gz'%patient_id
 
             # Interpolate on the 2-3 corners
-            ied = data[patient_id]["1"]["ied"]
+            grid = data[patient_id]["1"]["grid_config"]
+            N = int(grid.split('x')[0])
+            M = int(grid.split('x')[1])
             radius = 0.2 * ied
             pairs = interpol(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
-                            ied)
-            print pairs
-            
+                            N,M)
+
             # Create spheres of radius
             for k,v in pairs.items():
                 res[v[0]-radius:v[0]+radius,
