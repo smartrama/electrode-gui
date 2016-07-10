@@ -61,13 +61,13 @@ class TestInterpolation(unittest.TestCase):
 
             # Interpolate on the 2-3 corners
             grid = data[patient_id]["1"]["grid_config"]
-            N = int(grid.split('x')[0])
-            M = int(grid.split('x')[1])
+            M = int(grid.split('x')[0])
+            N = int(grid.split('x')[1])
             radius = 0.2 * 10
             pairs = interpol(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
-                            N,M)
+                            M,N)
 
             # Create spheres of radius
             for k,v in pairs.items():
