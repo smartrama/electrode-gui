@@ -20,9 +20,10 @@ import nibabel as nib
 import json
 
 from interpol import interpol
+from interpol import interpol_1x
 
 # Set filepath to data
-DATA_DIR = '../../data/HUP64'
+DATA_DIR = '~/Documents/Litt_Lab/HUP86'
 
 
 class TestInterpolation(unittest.TestCase):
@@ -71,12 +72,19 @@ class TestInterpolation(unittest.TestCase):
 
             print 'Preprocessing took: %s ms'%((time.clock()-preprocess_start)*1000)
 
-            interpol_start = time.clock()
-            pairs = interpol(data[patient_id]["1"]["A"],
+            if M == 1 or N == 1:
+                interpol_start = time.clock()
+                pairs = interpol_1x(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
-                            data[patient_id]["1"]["C"],
                             M,N)
-            print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
+                print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
+            else:
+                interpol_start = time.clock()
+                pairs = interpol(data[patient_id]["1"]["A"],
+                                data[patient_id]["1"]["B"],
+                                data[patient_id]["1"]["C"],
+                                M,N)
+                print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
 
             nib_start = time.clock()
             # Create spheres of radius
@@ -105,6 +113,21 @@ class TestInterpolation(unittest.TestCase):
         patient_id = 'HUP65'
         return self.test_patient(patient_id)
 
+    def test_HUP72(self):
+            """Unit test for patient HUP65."""
+            patient_id = 'HUP72'
+            return self.test_patient(patient_id)
+
+    def test_HUP86(self):
+            """Unit test for patient HUP65."""
+            patient_id = 'HUP86'
+            return self.test_patient(patient_id)
+
+    def test_HUP87(self):
+            """Unit test for patient HUP65."""
+            patient_id = 'HUP87'
+            return self.test_patient(patient_id)
+
     def runTest(self):
         """Required method for running a unit test."""
         return self.test_HUP64()
@@ -112,7 +135,7 @@ class TestInterpolation(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestInterpolation()
-    ti.test_HUP64()
+    ti.test_HUP86()
 
     # cProfile
     # cProfile.run('ti.test_HUP64()')

@@ -1,14 +1,14 @@
 import numpy as np
 
 def normalize(v):
-# This is a cheeky little subfunction to make unit vectors.
+# This is a subfunction to make unit vectors.
 	    norm=np.linalg.norm(v)
 	    if norm==0: 
 	       return v
 	    return v/norm
 
 def totuple(a):
-# Yet another cheeky subfunction, this time to make numpy arrays in to tuples.
+# This is a subfunction to make numpy arrays in to tuples.
     try:
         return tuple(totuple(i) for i in a)
     except TypeError:
@@ -65,6 +65,32 @@ def interpol(coor1, coor2, coor3, m, n):
 			count += 1
 			names.append("GRID %d" % count)
 		new_corr = np.add(A, (mag_B2C/(n-1))*(j+1)*(unit_B2C))
+		elec_coor.append(totuple(new_corr))
+		count += 1
+		names.append("GRID %d" % count)
+	names = names[0:-1]
+	elec_coor = elec_coor[0:-1]
+	pairs = dict(zip(names, elec_coor))
+	return pairs
+
+def interpol_1x(coor1, coor2, m, n):
+	# This is the version of interpol that handles strips.
+
+	# Turn input coordinates (which are presumably lists) into numpy arrays.
+	A = np.asarray(coor1)
+	B = np.asarray(coor2)
+	A2B = np.subtract(coor2, coor1)
+	unit_A2B = normalize(A2B)
+	mag_A2B = np.linalg.norm(A2B)
+	# Use for loops to deduce locations of electrodes.
+	names = []
+	elec_coor = []
+	new_corr = A
+	elec_coor.append(totuple(new_corr))
+	count = 1
+	names.append("GRID %d" % count)
+	for i in range(n):
+		new_corr = np.add(A, (mag_A2B/(n-1))*(i+1)*(unit_A2B))
 		elec_coor.append(totuple(new_corr))
 		count += 1
 		names.append("GRID %d" % count)
