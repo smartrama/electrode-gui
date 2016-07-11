@@ -10,8 +10,11 @@ __author__ = 'Lohith Kini'
 from os import path
 import sys
 sys.path.append(path.abspath('../util'))
+import cProfile
 
 import unittest
+import time
+
 import numpy as np
 import nibabel as nib
 import json
@@ -19,7 +22,7 @@ import json
 from interpol import interpol
 
 # Set filepath to data
-DATA_DIR = '~/Documents/Litt_Lab/HUP65'
+DATA_DIR = '../../data/HUP64'
 
 
 class TestInterpolation(unittest.TestCase):
@@ -45,6 +48,7 @@ class TestInterpolation(unittest.TestCase):
         @rtype: bool
         """
         try:
+            preprocess_start = time.clock()
             # Load the test coordinates
             data = self.load_data()
 
@@ -64,11 +68,17 @@ class TestInterpolation(unittest.TestCase):
             M = int(grid.split('x')[0])
             N = int(grid.split('x')[1])
             radius = 0.2 * 10
+
+            print 'Preprocessing took: %s'%(time.clock()-preprocess_start)
+
+            interpol_start = time.clock()
             pairs = interpol(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
                             M,N)
+            print 'Interpolation took: %s'%(time.clock()-interpol_start)
 
+            nib_start = time.clock()
             # Create spheres of radius
             for k,v in pairs.items():
                 res[v[0]-radius:v[0]+radius,
@@ -78,6 +88,7 @@ class TestInterpolation(unittest.TestCase):
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
             nib.save(res_nifti,path.expanduser(out_filename))
+            print 'Postprocessing took: %s'%(time.clock()-nib_start)
 
             return True
         except Exception, e:
@@ -101,4 +112,7 @@ class TestInterpolation(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestInterpolation()
-    ti.test_HUP65()
+    ti.test_HUP64()
+
+    # cProfile
+    # cProfile.run('ti.test_HUP64()')
