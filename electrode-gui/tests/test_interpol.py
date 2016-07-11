@@ -69,14 +69,14 @@ class TestInterpolation(unittest.TestCase):
             N = int(grid.split('x')[1])
             radius = 0.2 * 10
 
-            print 'Preprocessing took: %s'%(time.clock()-preprocess_start)
+            print 'Preprocessing took: %s ms'%((time.clock()-preprocess_start)*1000)
 
             interpol_start = time.clock()
             pairs = interpol(data[patient_id]["1"]["A"],
                             data[patient_id]["1"]["B"],
                             data[patient_id]["1"]["C"],
                             M,N)
-            print 'Interpolation took: %s'%(time.clock()-interpol_start)
+            print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
 
             nib_start = time.clock()
             # Create spheres of radius
@@ -88,7 +88,7 @@ class TestInterpolation(unittest.TestCase):
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
             nib.save(res_nifti,path.expanduser(out_filename))
-            print 'Postprocessing (which includes creating the final NIfTI file) took: %s'%(time.clock()-nib_start)
+            print 'Postprocessing (which includes creating the final NIfTI file) took: %s ms'%((time.clock()-nib_start)*1000)
 
             return True
         except Exception, e:
