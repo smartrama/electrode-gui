@@ -88,7 +88,7 @@ class TestInterpolation(unittest.TestCase):
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
             nib.save(res_nifti,path.expanduser(out_filename))
-            print 'Postprocessing took: %s'%(time.clock()-nib_start)
+            print 'Postprocessing (which includes creating the final NIfTI file) took: %s'%(time.clock()-nib_start)
 
             return True
         except Exception, e:
