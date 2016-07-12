@@ -4,9 +4,6 @@
 It takes as inputs three sample voxel coordinates representing the oriented corners of the grid as well as the path to the electrode segmentation file to use to map the interpolation.
 '''
 
-__version__ = '0.1'
-__author__ = 'Lohith Kini'
-
 from os import path
 import sys
 sys.path.append(path.abspath('../util'))
@@ -20,11 +17,17 @@ import nibabel as nib
 import json
 
 from interpol import interpol
-from interpol import interpol_1x
 
-# Set filepath to data
-DATA_DIR = '~/Documents/Litt_Lab/HUP86'
+__version__ = '0.1'
+__author__ = 'Lohith Kini'
+__email__ = 'lkini@mail.med.upenn.edu'
+__copyright__ = "Copyright 2016, University of Pennsylvania"
+__credits__ = ["Xavier Islam","Sandhitsu Das", "Joel Stein",
+                "Kathryn Davis"]
+__license__ = "MIT"
+__status__ = "Development"
 
+DATA_DIR = ''
 
 class TestInterpolation(unittest.TestCase):
     """Unit test for interpolation on grids and strips.
@@ -39,6 +42,9 @@ class TestInterpolation(unittest.TestCase):
         """
         with open('test_coords.json') as data_file:
             data = json.load(data_file)
+        # Set filepath to data
+        global DATA_DIR
+        DATA_DIR = str(data['DATA_DIR'])
         return data
 
     def test_patient(self,patient_id):
@@ -72,19 +78,17 @@ class TestInterpolation(unittest.TestCase):
 
             print 'Preprocessing took: %s ms'%((time.clock()-preprocess_start)*1000)
 
+            interpol_start = time.clock()
             if M == 1 or N == 1:
-                interpol_start = time.clock()
-                pairs = interpol_1x(data[patient_id]["1"]["A"],
-                            data[patient_id]["1"]["B"],
+                pairs = interpol(data[patient_id]["1"]["A"],
+                            data[patient_id]["1"]["B"],[],
                             M,N)
-                print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
             else:
-                interpol_start = time.clock()
                 pairs = interpol(data[patient_id]["1"]["A"],
                                 data[patient_id]["1"]["B"],
                                 data[patient_id]["1"]["C"],
                                 M,N)
-                print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
+            print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
 
             nib_start = time.clock()
             # Create spheres of radius
@@ -136,6 +140,3 @@ class TestInterpolation(unittest.TestCase):
 if __name__ == '__main__':
     ti = TestInterpolation()
     ti.test_HUP86()
-
-    # cProfile
-    # cProfile.run('ti.test_HUP64()')
