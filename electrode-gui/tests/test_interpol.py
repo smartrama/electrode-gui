@@ -88,7 +88,7 @@ class TestInterpolation(unittest.TestCase):
                                 data[patient_id]["1"]["B"],
                                 data[patient_id]["1"]["C"],
                                 M,N)
-            print 'Interpolation took: %s ms'%((time.clock()-interpol_start)*1000)
+            print 'Interpolation took: %s ms'%((time.clock()-interpol_start))
 
             nib_start = time.clock()
             # Create spheres of radius
