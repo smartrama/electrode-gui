@@ -1,0 +1,23 @@
+{
+    "DATA_DIR": "data/",
+    "_comment": "2D Geodesic Test Start and End Points: [test_name: (start_i, start_j) (end_i, end_j)]. ### NOTE: given in zero-based (i, j) notation, where i represents rows and increases downward and j represents columns and increases to the right.",
+    "geodesic2D_test_1": {
+        "1": {
+            "A": [126, 87],
+            "B": [98, 147]
+        }
+    },
+    "geodesic2D_test_2": {
+        "1": {
+            "A": [133, 67],
+            "B": [74, 89]
+        }
+    },
+    "geodesic2D_test_3": {
+        "1": {
+            "A": [74, 89],
+            "B": [122, 157]
+        }
+    }
+}
+
