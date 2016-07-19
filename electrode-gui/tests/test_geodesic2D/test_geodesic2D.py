@@ -17,6 +17,7 @@ import time
 import numpy as np
 import scipy.io as sio
 import nibabel as nib
+import matplotlib.pyplot as plt
 import json
 
 from geodesic2D import geodesic2D
@@ -70,9 +71,10 @@ class TestGeodesicDistance(unittest.TestCase):
             mask = sio.loadmat(DATA_DIR + case_id + '.mat')
 
             # Initialize the result 2d path matrix
+            res = mask['mask']
 
             # Set the output file name
-            out_filename = DATA_DIR + '%s_geodesic2D_path.nii.gz'%case_id
+            out_filename = DATA_DIR + '%s_geodesic2D_path.mat'%case_id
 
             # Interpolate on the 2-3 corners
             start = tuple(data[case_id]["1"]["A"])
@@ -84,7 +86,7 @@ class TestGeodesicDistance(unittest.TestCase):
 
             path_traversal_start = time.clock()
 
-            path = geodesic2D(start,
+            path_traversal = geodesic2D(start,
                             end,
                             mask['mask']
                             )
@@ -95,13 +97,10 @@ class TestGeodesicDistance(unittest.TestCase):
 
             mat_start = time.clock()
             # Create spheres of radius
-            for k,v in pairs.items():
-                res[v[0]-radius:v[0]+radius,
-                    v[1]-radius:v[1]+radius,
-                    v[2]-radius:v[2]+radius] = 1
+            for point in path_traversal:
+                res[point] = 2
 
             # Save res as new output result file
-
             sio.savemat(
                 path.expanduser(out_filename),
                 {
@@ -109,46 +108,39 @@ class TestGeodesicDistance(unittest.TestCase):
                 }
                 )
 
-            print 'Postprocessing (which includes creating the final NIfTI \
-                file) took: %s ms'%(
+            print 'Postprocessing took: %s ms'%(
                 (time.clock()-mat_start)*1000
                 )
+
+            # Plot resulting image
+            plt.imshow(res)
+            plt.show()
 
             return True
         except Exception, e:
             print str(e)
             return False
 
-    def test_HUP64(self):
-        """Unit test for patient HUP64."""
-        case_id = 'HUP64'
-        return self.test_patient(case_id)
+    def test_geodesic2D_test_1(self):
+        """Unit test for patient geodesic2D_test_1."""
+        case_id = 'geodesic2D_test_1'
+        return self.test_cases(case_id)
 
-    def test_HUP65(self):
-        """Unit test for patient HUP65."""
-        case_id = 'HUP65'
-        return self.test_patient(case_id)
+    def test_geodesic2D_test_2(self):
+        """Unit test for patient geodesic2D_test_2."""
+        case_id = 'geodesic2D_test_2'
+        return self.test_cases(case_id)
 
-    def test_HUP72(self):
-            """Unit test for patient HUP65."""
-            case_id = 'HUP72'
-            return self.test_patient(case_id)
-
-    def test_HUP86(self):
-            """Unit test for patient HUP65."""
-            case_id = 'HUP86'
-            return self.test_patient(case_id)
-
-    def test_HUP87(self):
-            """Unit test for patient HUP65."""
-            case_id = 'HUP87'
-            return self.test_patient(case_id)
+    def test_geodesic2D_test_3(self):
+        """Unit test for patient geodesic2D_test_3."""
+        case_id = 'geodesic2D_test_3'
+        return self.test_cases(case_id)
 
     def runTest(self):
         """Required method for running a unit test."""
-        return self.test_HUP64()
+        return self.test_geodesic2D_test_1()
 
 
 if __name__ == '__main__':
-    ti = TestInterpolation()
-    ti.test_HUP86()
+    ti = TestGeodesicDistance()
+    ti.test_geodesic2D_test_3()
