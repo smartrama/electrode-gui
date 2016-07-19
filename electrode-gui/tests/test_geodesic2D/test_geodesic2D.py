@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ''' This script tests geodesic2D.py utility function that returns the optimal path from one point to another on a 2D cost mask (e.g. brain mask). Note
     that this is a path and not an interpolation of electrodes along a path.
 
@@ -78,6 +78,8 @@ class TestGeodesicDistance(unittest.TestCase):
             # Interpolate on the 2-3 corners
             start = tuple(data[case_id]["1"]["A"])
             end = tuple(data[case_id]["1"]["B"])
+            start = (start[1],start[0])
+            end = (end[1],end[0])
 
             print 'Preprocessing took: %s ms'%(
                 (time.clock()-preprocess_start)*1000
@@ -97,7 +99,7 @@ class TestGeodesicDistance(unittest.TestCase):
             mat_start = time.clock()
             # Create spheres of radius
             for point in path_traversal:
-                res[point] = 2
+                res[point[1], point[0]] = 2
 
             # Save res as new output result file
             sio.savemat(
@@ -135,6 +137,11 @@ class TestGeodesicDistance(unittest.TestCase):
         case_id = 'geodesic2D_test_3'
         return self.test_cases(case_id)
 
+    def test_geodesic2D_test_4(self):
+        """Unit test for patient geodesic2D_test_4."""
+        case_id = 'geodesic2D_test_4'
+        return self.test_cases(case_id)
+
     def runTest(self):
         """Required method for running a unit test."""
         return self.test_geodesic2D_test_1()
@@ -142,4 +149,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic2D_test_3()
+    ti.test_geodesic2D_test_4()

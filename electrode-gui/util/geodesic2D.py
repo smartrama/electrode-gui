@@ -8,6 +8,8 @@ It takes as inputs two sample voxel coordinates representing the starting and en
     by graph traversal using Djikstra's algorithm.
 '''
 
+import pdb
+
 import numpy as np
 import networkx as nx
 
@@ -112,6 +114,6 @@ def geodesic2D(start, end, mask):
 						G.edge[(i, j)][x]['weight'] = 4
 					if G.node[x]['val'] == 5:
 						G.edge[(i, j)][x]['weight'] = 5
-
+	pdb.set_trace()
 	# Return Dijkstra's shortest path.
 	return nx.dijkstra_path(G, start, end)
