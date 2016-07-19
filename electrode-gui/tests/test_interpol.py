@@ -141,4 +141,4 @@ class TestInterpolation(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestInterpolation()
-    ti.test_HUP86()
+    ti.test_HUP64()
