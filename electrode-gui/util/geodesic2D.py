@@ -8,8 +8,6 @@ It takes as inputs two sample voxel coordinates representing the starting and en
     by graph traversal using Djikstra's algorithm.
 '''
 
-import pdb
-
 import numpy as np
 import networkx as nx
 
@@ -62,22 +60,53 @@ def geodesic2D(start, end, mask):
 	# set default edge weight to infinity.
 	for i in range(nrow):
 		for j in range(ncol):
-			if j == ncol-1 and i != nrow-1:
-				G.add_edge((i, j), (i+1, j), weight=float('inf'))
-				G.add_edge((i, j), (i+1, j-1), weight=float('inf'))
-			elif i == nrow-1 and j != ncol-1:
-				G.add_edge((i, j), (i, j+1), weight=float('inf'))
-			elif j == 0 and i != nrow-1:
+			if i == 0 and j == 0:
 				G.add_edge((i, j), (i, j+1), weight=float('inf'))
 				G.add_edge((i, j), (i+1, j), weight=float('inf'))
 				G.add_edge((i, j), (i+1, j+1), weight=float('inf'))
+			elif i == 0 and j == ncol-1:
+				G.add_edge((i, j), (i, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j-1), weight=float('inf'))
+			elif i == 0 and j != 0:
+				G.add_edge((i, j), (i, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j-1), weight=float('inf'))
+			elif i == nrow-1 and j == 0:
+				G.add_edge((i, j), (i, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j+1), weight=float('inf'))
 			elif i == nrow-1 and j == ncol-1:
 				break
-			else:
+			elif i == nrow-1 and j != 0:
+				G.add_edge((i, j), (i, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j-1), weight=float('inf'))
+			elif i != 0 and j == 0:
 				G.add_edge((i, j), (i, j+1), weight=float('inf'))
 				G.add_edge((i, j), (i+1, j), weight=float('inf'))
 				G.add_edge((i, j), (i+1, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j+1), weight=float('inf'))
+			elif i != 0 and j == ncol-1:
+				G.add_edge((i, j), (i, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j), weight=float('inf'))
 				G.add_edge((i, j), (i+1, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j-1), weight=float('inf'))
+			elif i != 0 and j != 0:
+				G.add_edge((i, j), (i, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i+1, j-1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j+1), weight=float('inf'))
+				G.add_edge((i, j), (i-1, j-1), weight=float('inf'))
 
 	# Check neighbors to obtain zero count and assign edge weights accordingly.
 	for i in range(nrow):
@@ -114,6 +143,5 @@ def geodesic2D(start, end, mask):
 						G.edge[(i, j)][x]['weight'] = 4
 					if G.node[x]['val'] == 5:
 						G.edge[(i, j)][x]['weight'] = 5
-	pdb.set_trace()
 	# Return Dijkstra's shortest path.
 	return nx.dijkstra_path(G, start, end)
