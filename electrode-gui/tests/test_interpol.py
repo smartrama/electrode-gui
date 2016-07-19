@@ -38,9 +38,11 @@ class TestInterpolation(unittest.TestCase):
     def load_data(self):
         """returns the JSON data as a dictionary
 
-        Takes in coordinates and grid size from 5 sample patients saved in test_coords.json file located in the same folder as this unit test.
+        Takes in coordinates and grid size from 5 sample patients saved in
+            interpol_examples.json file located in the same folder as this
+            unit test.
         """
-        with open('test_coords.json') as data_file:
+        with open('interpol_examples.json') as data_file:
             data = json.load(data_file)
         # Set filepath to data
         global DATA_DIR
