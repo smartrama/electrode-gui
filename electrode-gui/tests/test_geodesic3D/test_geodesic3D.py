@@ -1,5 +1,5 @@
 #!/usr/bin/python
-''' This script tests geodesic2D.py utility function that returns the optimal path from one point to another on a 2D cost mask (e.g. brain mask). Note
+''' This script tests geodesic.py utility function that returns the optimal path from one point to another on a 3D cost mask (e.g. brain mask). Note
     that this is a path and not an interpolation of electrodes along a path.
 
 It takes as inputs two sample voxel coordinates representing the starting and ending points on a mask surface as well as the mask itself used to determine the path on which to traverse. It outputs the path as determined
@@ -53,12 +53,12 @@ class TestGeodesicDistance(unittest.TestCase):
         DATA_DIR = str(data['DATA_DIR'])
         return data
 
-    def test_cases(self,case_id):
+    def test_patients(self,patient_id):
         """returns True or False depending on the success of creating a
             synthetic path on a 2D mask.
 
-        @param case_id: Sample test case ID
-        @type case_id: string
+        @param patient_id: Sample test case ID
+        @type patient_id: string
         @rtype: bool
         """
         try:
@@ -67,17 +67,17 @@ class TestGeodesicDistance(unittest.TestCase):
             data = self.load_data()
 
             # Load the mask MAT file
-            mask = sio.loadmat(DATA_DIR + case_id + '.mat')
+            mask = sio.loadmat(DATA_DIR + patient_id + '.mat')
 
             # Initialize the result 2d path matrix
             res = mask['mask']
 
             # Set the output file name
-            out_filename = DATA_DIR + '%s_geodesic2D_path.mat'%case_id
+            out_filename = DATA_DIR + '%s_geodesic2D_path.mat'%patient_id
 
             # Interpolate on the 2-3 corners
-            start = tuple(data[case_id]["1"]["A"])
-            end = tuple(data[case_id]["1"]["B"])
+            start = tuple(data[patient_id]["1"]["A"])
+            end = tuple(data[patient_id]["1"]["B"])
 
             print 'Preprocessing took: %s ms'%(
                 (time.clock()-preprocess_start)*1000
@@ -122,18 +122,18 @@ class TestGeodesicDistance(unittest.TestCase):
 
     def test_geodesic2D_test_1(self):
         """Unit test for patient geodesic2D_test_1."""
-        case_id = 'geodesic2D_test_1'
-        return self.test_cases(case_id)
+        patient_id = 'geodesic2D_test_1'
+        return self.test_cases(patient_id)
 
     def test_geodesic2D_test_2(self):
         """Unit test for patient geodesic2D_test_2."""
-        case_id = 'geodesic2D_test_2'
-        return self.test_cases(case_id)
+        patient_id = 'geodesic2D_test_2'
+        return self.test_cases(patient_id)
 
     def test_geodesic2D_test_3(self):
         """Unit test for patient geodesic2D_test_3."""
-        case_id = 'geodesic2D_test_3'
-        return self.test_cases(case_id)
+        patient_id = 'geodesic2D_test_3'
+        return self.test_cases(patient_id)
 
     def runTest(self):
         """Required method for running a unit test."""
