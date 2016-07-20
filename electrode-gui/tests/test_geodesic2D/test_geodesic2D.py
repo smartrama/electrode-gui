@@ -78,8 +78,6 @@ class TestGeodesicDistance(unittest.TestCase):
             # Interpolate on the 2-3 corners
             start = tuple(data[case_id]["1"]["A"])
             end = tuple(data[case_id]["1"]["B"])
-            start = (start[1],start[0])
-            end = (end[1],end[0])
 
             print 'Preprocessing took: %s ms'%(
                 (time.clock()-preprocess_start)*1000
@@ -99,7 +97,7 @@ class TestGeodesicDistance(unittest.TestCase):
             mat_start = time.clock()
             # Create spheres of radius
             for point in path_traversal:
-                res[point[1], point[0]] = 2
+                res[point] = 2
 
             # Save res as new output result file
             sio.savemat(
@@ -142,6 +140,11 @@ class TestGeodesicDistance(unittest.TestCase):
         case_id = 'geodesic2D_test_4'
         return self.test_cases(case_id)
 
+    def test_geodesic2D_test_5(self):
+        """Unit test for patient geodesic2D_test_4."""
+        case_id = 'geodesic2D_test_5'
+        return self.test_cases(case_id)
+
     def runTest(self):
         """Required method for running a unit test."""
         return self.test_geodesic2D_test_1()
@@ -149,4 +152,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic2D_test_1()
+    ti.test_geodesic2D_test_3()
