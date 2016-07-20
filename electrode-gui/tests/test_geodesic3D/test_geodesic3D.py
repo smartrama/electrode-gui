@@ -1,5 +1,5 @@
-#!/usr/bin/python
-''' This script tests geodesic.py utility function that returns the optimal path from one point to another on a 3D cost mask (e.g. brain mask). Note
+#!/usr/bin/env python
+''' This script tests geodesic3D.py utility function that returns the optimal path from one point to another on a 3D cost mask (e.g. brain mask). Note
     that this is a path and not an interpolation of electrodes along a path.
 
 It takes as inputs two sample voxel coordinates representing the starting and ending points on a mask surface as well as the mask itself used to determine the path on which to traverse. It outputs the path as determined
@@ -125,26 +125,26 @@ class TestGeodesicDistance(unittest.TestCase):
             print str(e)
             return False
 
-    def test_geodesic2D_test_1(self):
-        """Unit test for patient geodesic2D_test_1."""
-        patient_id = 'geodesic2D_test_1'
-        return self.test_cases(patient_id)
+    def test_geodesic3D_test_1(self):
+        """Unit test for patient HUP64."""
+        patient_id = 'HUP64'
+        return self.test_patients(patient_id)
 
-    def test_geodesic2D_test_2(self):
-        """Unit test for patient geodesic2D_test_2."""
-        patient_id = 'geodesic2D_test_2'
-        return self.test_cases(patient_id)
+    def test_geodesic3D_test_2(self):
+        """Unit test for patient HUP65."""
+        patient_id = 'HUP65'
+        return self.test_patients(patient_id)
 
-    def test_geodesic2D_test_3(self):
+    def test_geodesic3D_test_3(self):
         """Unit test for patient geodesic2D_test_3."""
         patient_id = 'geodesic2D_test_3'
-        return self.test_cases(patient_id)
+        return self.test_patients(patient_id)
 
     def runTest(self):
         """Required method for running a unit test."""
-        return self.test_geodesic2D_test_1()
+        return self.test_geodesic3D_test_1()
 
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic2D_test_3()
+    ti.test_geodesic3D_test_1()

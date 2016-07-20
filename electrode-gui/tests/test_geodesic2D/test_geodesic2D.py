@@ -152,4 +152,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic2D_test_3()
+    ti.test_geodesic2D_test_2()
