@@ -19,7 +19,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import json
 
-from geodesic2D import geodesic2D
+from geodesic3D import geodesic3D
 
 __version__ = '0.0'
 __author__ = 'Lohith Kini'
@@ -34,19 +34,19 @@ DATA_DIR = 'data/'
 
 class TestGeodesicDistance(unittest.TestCase):
     """Unit test for measuring the geodesic distance between two points
-        on the mask.
+        on a 3D mask.
 
-    Tests different forms of masks (binary) and sample points on the masks
+    Tests different forms of masks (binary) and sample points on the masks.
     """
 
     def load_data(self):
         """returns the JSON data as a dictionary
 
         Takes in coordinates from 3 sample test cases saved in
-            geodesic2D_examples.json file located in the same folder as this
+            geodesic3D_examples.json file located in the same folder as this
             unit test.
         """
-        with open('geodesic2D_examples.json') as data_file:
+        with open('geodesic3D_examples.json') as data_file:
             data = json.load(data_file)
         # Set filepath to data
         global DATA_DIR
@@ -55,9 +55,9 @@ class TestGeodesicDistance(unittest.TestCase):
 
     def test_patients(self,patient_id):
         """returns True or False depending on the success of creating a
-            synthetic path on a 2D mask.
+            synthetic path on a 3D mask.
 
-        @param patient_id: Sample test case ID
+        @param patient_id: Sample test patient ID
         @type patient_id: string
         @rtype: bool
         """
@@ -66,54 +66,59 @@ class TestGeodesicDistance(unittest.TestCase):
             # Load the test coordinates
             data = self.load_data()
 
-            # Load the mask MAT file
-            mask = sio.loadmat(DATA_DIR + patient_id + '.mat')
+            # Load the segmentation file
+            seg_filename = '%s/%s_unburied_electrode_seg.nii.gz'%(
+                DATA_DIR,
+                patient_id
+                )
+            seg = nib.load(path.expanduser(seg_filename))
+            seg_data = seg.get_data()
 
-            # Initialize the result 2d path matrix
-            res = mask['mask']
+            mask_filename = '%s/%s_brain_mask.nii.gz'%(
+                DATA_DIR,
+                patient_id
+                )
+            mask = nib.load(path.expanduser(mask_filename))
+            mask_data = mask.get_data()
+
+            # Initialize the result 3d image matrix
+            res = np.zeros(seg_data.shape)
 
             # Set the output file name
-            out_filename = DATA_DIR + '%s_geodesic2D_path.mat'%patient_id
+            out_filename = seg_filename[:-35] + '%s_interpol.nii.gz'%patient_id
 
             # Interpolate on the 2-3 corners
-            start = tuple(data[patient_id]["1"]["A"])
-            end = tuple(data[patient_id]["1"]["B"])
+            grid = data[patient_id]["1"]["grid_config"]
+            M = int(grid.split('x')[0])
+            N = int(grid.split('x')[1])
+            radius = 0.2 * 10
 
             print 'Preprocessing took: %s ms'%(
                 (time.clock()-preprocess_start)*1000
                 )
 
-            path_traversal_start = time.clock()
+            interpol_start = time.clock()
 
-            path_traversal = geodesic2D(start,
-                            end,
-                            mask['mask']
-                            )
-
-            print 'Geodesic 2D path computation took: %s ms'%(
-                (time.clock()-path_traversal_start)*1000
+            traversal_path = geodesic3D(
+                data[patient_id]["1"]["A"],
+                data[patient_id]["1"]["B"],
+                mask_data
                 )
 
-            mat_start = time.clock()
+            print 'Interpolation took: %s ms'%(
+                (time.clock()-interpol_start)*1000
+                )
+
+            nib_start = time.clock()
             # Create spheres of radius
-            for point in path_traversal:
-                res[point] = 2
+            for point in traversal_path:
+                res[point] = 1
 
             # Save res as new output result file
-            sio.savemat(
-                path.expanduser(out_filename),
-                {
-                    'res':res
-                }
-                )
-
-            print 'Postprocessing took: %s ms'%(
-                (time.clock()-mat_start)*1000
-                )
-
-            # Plot resulting image
-            plt.imshow(res)
-            plt.show()
+            res_nifti = nib.Nifti1Image(res,seg.get_affine())
+            nib.save(res_nifti,path.expanduser(out_filename))
+            print 'Postprocessing (which includes creating the final NIfTI \
+                file) took: %s ms'%((time.clock()-nib_start)*1000)
 
             return True
         except Exception, e:
