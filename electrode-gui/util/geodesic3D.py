@@ -7,6 +7,8 @@ It takes as inputs two sample voxel coordinates representing the starting and en
     by graph traversal using Djikstra's algorithm.
 '''
 
+import pdb
+
 import numpy as np
 import networkx as nx
 import math
@@ -55,11 +57,11 @@ def geodesic3D(start, end, mask):
 		zero_i = end[0]-mag_path
 		nrow = start[0]+mag_path
 	if start[1] <= end[1]:
-		zero_j = start[1]-1
-		ncol = end[1]+1
+		zero_j = start[1]-mag_path
+		ncol = end[1]+mag_path
 	else:
-		zero_j = end[1]-1
-		ncol = start[1]+1
+		zero_j = end[1]-mag_path
+		ncol = start[1]+mag_path
 	if start[2] <= end[2]:
 		zero_k = start[2]-mag_path
 		nlay = end[2]+mag_path
@@ -78,7 +80,7 @@ def geodesic3D(start, end, mask):
 	for i in range(zero_i, nrow):
 		for j in range(zero_j, ncol):
 			for k in range(zero_k, nlay):
-				G.add_node((i, j, k), val=int(mask[i][j][k]))
+				G.add_node((i, j, k), val=mask[i][j][k])
 
 	# Make edges for adjacent nodes (diagonal is also considered adjacent) and set default edge weight to infinity.
 	for i in range(zero_i, nrow):
@@ -439,15 +441,6 @@ def geodesic3D(start, end, mask):
 					for x in G.neighbors((i, j, k)):
 						if G.node[x]['val'] == 0:
 							G.node[(i, j, k)]['zc'] += 1
-					# Change value of nodes with different zero counts to different values.
-					# if G.node[(i, j, k)]['zc'] == 0:
-					# 	G.node[(i, j, k)]['val'] = 6
-					# if G.node[(i, j, k)]['zc'] == 1:
-					# 	G.node[(i, j, k)]['val'] = 5
-					# if G.node[(i, j, k)]['zc'] == 3:
-					# 	G.node[(i, j, k)]['val'] = 4
-					# if G.node[(i, j, k)]['zc'] >= 5:
-					# 	G.node[(i, j, k)]['val'] = 3
 
 	# Assign edge weights according to value.
 	for i in range(zero_i, nrow):
@@ -455,25 +448,25 @@ def geodesic3D(start, end, mask):
 			for k in range(zero_k, nlay):
 				if G.node[(i, j, k)]['val'] == 1:
 					for x in G.neighbors((i, j, k)):
-						if 'zc' in G.node[x] and G.node[(i,j)]['zc'] != 0:
-							if G.node[x]['zc'] == 7:
-								G.edge[(i, j)][x]['weight'] = 1**2
+						if 'zc' in G.node[x] and G.node[(i, j, k)]['zc'] != 0:
+							if G.node[x]['zc'] >= 7:
+								G.edge[(i, j, k)][x]['weight'] = 1**2
 							if G.node[x]['zc'] == 6:
-								G.edge[(i, j)][x]['weight'] = 2**2
+								G.edge[(i, j, k)][x]['weight'] = 2**2
 							if G.node[x]['zc'] == 5:
-								G.edge[(i, j)][x]['weight'] = 3**2
+								G.edge[(i, j, k)][x]['weight'] = 3**2
 							if G.node[x]['zc'] == 4:
-								G.edge[(i, j)][x]['weight'] = 4**2
+								G.edge[(i, j, k)][x]['weight'] = 4**2
 							if G.node[x]['zc'] == 3:
-								G.edge[(i, j)][x]['weight'] = 5**2
+								G.edge[(i, j, k)][x]['weight'] = 5**2
 							if G.node[x]['zc'] == 2:
-								G.edge[(i, j)][x]['weight'] = 6**2
+								G.edge[(i, j, k)][x]['weight'] = 6**2
 							if G.node[x]['zc'] == 1:
-								G.edge[(i, j)][x]['weight'] = 7**2
+								G.edge[(i, j, k)][x]['weight'] = 7**2
 							if G.node[x]['zc'] == 0:
-								G.edge[(i, j)][x]['weight'] = 8**2
+								G.edge[(i, j, k)][x]['weight'] = 8**2
 						else:
-							G.edge[(i, j)][x]['weight'] = float('inf')
-
+							G.edge[(i, j, k)][x]['weight'] = float('inf')
+	pdb.set_trace()
 	# Return Dijkstra's shortest path.
 	return nx.dijkstra_path(G, start, end)

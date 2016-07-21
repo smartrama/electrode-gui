@@ -100,8 +100,8 @@ class TestGeodesicDistance(unittest.TestCase):
             interpol_start = time.clock()
 
             traversal_path = geodesic3D(
-                data[patient_id]["1"]["A"],
-                data[patient_id]["1"]["B"],
+                tuple(data[patient_id]["1"]["A"]),
+                tuple(data[patient_id]["1"]["B"]),
                 mask_data
                 )
 
@@ -112,7 +112,9 @@ class TestGeodesicDistance(unittest.TestCase):
             nib_start = time.clock()
             # Create spheres of radius
             for point in traversal_path:
-                res[point] = 1
+                res[point[0]-radius:point[0]+radius,
+                    point[1]-radius:point[1]+radius,
+                    point[2]-radius:point[2]+radius] = 1
 
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
@@ -137,7 +139,7 @@ class TestGeodesicDistance(unittest.TestCase):
 
     def test_geodesic3D_test_3(self):
         """Unit test for patient geodesic2D_test_3."""
-        patient_id = 'geodesic2D_test_3'
+        patient_id = 'HUP86'
         return self.test_patients(patient_id)
 
     def runTest(self):
