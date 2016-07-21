@@ -105,8 +105,8 @@ class TestGeodesicDistance(unittest.TestCase):
                 mask_data
                 )
 
-            print 'Interpolation took: %s ms'%(
-                (time.clock()-interpol_start)*1000
+            print 'Interpolation took: %s s'%(
+                (time.clock()-interpol_start)
                 )
 
             nib_start = time.clock()
@@ -149,4 +149,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic3D_test_1()
+    ti.test_geodesic3D_test_3()

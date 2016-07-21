@@ -49,7 +49,7 @@ def geodesic3D(start, end, mask):
     '''
 
 	# Load mask and initialize graph.
-	mag_path = int(math.ceil(0.1*np.linalg.norm(np.subtract(end, start))))
+	mag_path = int(math.ceil(0.05*np.linalg.norm(np.subtract(end, start))))
 	if start[0] <= end[0]:
 		zero_i = start[0]-mag_path
 		nrow = end[0]+mag_path
@@ -467,6 +467,6 @@ def geodesic3D(start, end, mask):
 								G.edge[(i, j, k)][x]['weight'] = 8**2
 						else:
 							G.edge[(i, j, k)][x]['weight'] = float('inf')
-	pdb.set_trace()
+	
 	# Return Dijkstra's shortest path.
 	return nx.dijkstra_path(G, start, end)
