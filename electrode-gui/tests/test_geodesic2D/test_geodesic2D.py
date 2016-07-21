@@ -141,7 +141,7 @@ class TestGeodesicDistance(unittest.TestCase):
         return self.test_cases(case_id)
 
     def test_geodesic2D_test_5(self):
-        """Unit test for patient geodesic2D_test_4."""
+        """Unit test for patient geodesic2D_test_5."""
         case_id = 'geodesic2D_test_5'
         return self.test_cases(case_id)
 
@@ -152,4 +152,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic2D_test_2()
+    ti.test_geodesic2D_test_1()
