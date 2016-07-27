@@ -142,6 +142,11 @@ class TestGeodesicDistance(unittest.TestCase):
         patient_id = 'HUP86'
         return self.test_patients(patient_id)
 
+    def test_geodesic3D_test_4(self):
+        """Unit test for patient geodesic2D_test_3."""
+        patient_id = 'HUP87'
+        return self.test_patients(patient_id)
+
     def runTest(self):
         """Required method for running a unit test."""
         return self.test_geodesic3D_test_1()
@@ -149,4 +154,4 @@ class TestGeodesicDistance(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestGeodesicDistance()
-    ti.test_geodesic3D_test_3()
+    ti.test_geodesic3D_test_2()

@@ -450,21 +450,21 @@ def geodesic3D(start, end, mask):
 					for x in G.neighbors((i, j, k)):
 						if 'zc' in G.node[x] and G.node[(i, j, k)]['zc'] != 0:
 							if G.node[x]['zc'] >= 7:
-								G.edge[(i, j, k)][x]['weight'] = 1**2
+								G.edge[(i, j, k)][x]['weight'] = 1
 							if G.node[x]['zc'] == 6:
-								G.edge[(i, j, k)][x]['weight'] = 2**2
+								G.edge[(i, j, k)][x]['weight'] = 2
 							if G.node[x]['zc'] == 5:
-								G.edge[(i, j, k)][x]['weight'] = 3**2
+								G.edge[(i, j, k)][x]['weight'] = 3
 							if G.node[x]['zc'] == 4:
-								G.edge[(i, j, k)][x]['weight'] = 4**2
+								G.edge[(i, j, k)][x]['weight'] = 4
 							if G.node[x]['zc'] == 3:
-								G.edge[(i, j, k)][x]['weight'] = 5**2
+								G.edge[(i, j, k)][x]['weight'] = 5
 							if G.node[x]['zc'] == 2:
-								G.edge[(i, j, k)][x]['weight'] = 6**2
+								G.edge[(i, j, k)][x]['weight'] = 6
 							if G.node[x]['zc'] == 1:
-								G.edge[(i, j, k)][x]['weight'] = 7**2
+								G.edge[(i, j, k)][x]['weight'] = 7
 							if G.node[x]['zc'] == 0:
-								G.edge[(i, j, k)][x]['weight'] = 8**2
+								G.edge[(i, j, k)][x]['weight'] = 8
 						else:
 							G.edge[(i, j, k)][x]['weight'] = float('inf')
 	
