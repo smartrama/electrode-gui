@@ -7,7 +7,7 @@ It takes as inputs two sample voxel coordinates representing the starting and en
     by graph traversal using Djikstra's algorithm.
 '''
 
-import pdb
+import time
 
 import numpy as np
 import networkx as nx
@@ -21,6 +21,7 @@ __credits__ = ["Lohith Kini","Sandhitsu Das", "Joel Stein",
                 "Kathryn Davis"]
 __license__ = "MIT"
 __status__ = "Development"
+
 
 def geodesic3D(start, end, mask):
 	''' returns a geodesic path when given a brain mask, a start point, and
@@ -49,7 +50,7 @@ def geodesic3D(start, end, mask):
     '''
 
 	# Load mask and initialize graph.
-	mag_path = int(math.ceil(0.05*np.linalg.norm(np.subtract(end, start))))
+	mag_path = int(math.ceil(0.01*np.linalg.norm(np.subtract(end, start))))
 	if start[0] <= end[0]:
 		zero_i = start[0]-mag_path
 		nrow = end[0]+mag_path
@@ -75,17 +76,21 @@ def geodesic3D(start, end, mask):
 	ncol = int(ncol)
 	nlay = int(nlay)
 	G = nx.Graph()
+	shape_i = nrow - zero_i
+	shape_j = ncol - zero_j
+	shape_k = nlay - zero_k
+	print shape_i, shape_j, shape_k
 
 	# Populate graph with nodes, with i being the row number and j being the column number.
-	for i in range(zero_i, nrow):
-		for j in range(zero_j, ncol):
-			for k in range(zero_k, nlay):
+	for i in xrange(zero_i, nrow):
+		for j in xrange(zero_j, ncol):
+			for k in xrange(zero_k, nlay):
 				G.add_node((i, j, k), val=mask[i][j][k])
 
 	# Make edges for adjacent nodes (diagonal is also considered adjacent) and set default edge weight to infinity.
-	for i in range(zero_i, nrow):
-		for j in range(zero_j, ncol):
-			for k in range(zero_k, nlay):
+	for i in xrange(zero_i, nrow):
+		for j in xrange(zero_j, ncol):
+			for k in xrange(zero_k, nlay):
 				if i == zero_i and j == zero_j and k == zero_k:
 					G.add_edge((i, j, k), (i, j, k+1), weight=float('inf'))
 					G.add_edge((i, j, k), (i, j+1, k), weight=float('inf'))
@@ -431,9 +436,9 @@ def geodesic3D(start, end, mask):
 					G.add_edge((i, j, k), (i-1, j-1, k-1), weight=float('inf'))
 
 	# Check neighbors to obtain zero count and assign edge weights accordingly.
-	for i in range(zero_i, nrow):
-		for j in range(zero_j, ncol):
-			for k in range(zero_k, nlay):
+	for i in xrange(zero_i, nrow):
+		for j in xrange(zero_j, ncol):
+			for k in xrange(zero_k, nlay):
 			# Only care about nodes with value of 1.
 				if G.node[(i, j, k)]['val'] == 1:
 					G.node[(i, j, k)]['zc'] = 0
@@ -443,9 +448,9 @@ def geodesic3D(start, end, mask):
 							G.node[(i, j, k)]['zc'] += 1
 
 	# Assign edge weights according to value.
-	for i in range(zero_i, nrow):
-		for j in range(zero_j, ncol):
-			for k in range(zero_k, nlay):
+	for i in xrange(zero_i, nrow):
+		for j in xrange(zero_j, ncol):
+			for k in xrange(zero_k, nlay):
 				if G.node[(i, j, k)]['val'] == 1:
 					for x in G.neighbors((i, j, k)):
 						if 'zc' in G.node[x] and G.node[(i, j, k)]['zc'] != 0:
@@ -467,6 +472,6 @@ def geodesic3D(start, end, mask):
 								G.edge[(i, j, k)][x]['weight'] = 8
 						else:
 							G.edge[(i, j, k)][x]['weight'] = float('inf')
-	
+
 	# Return Dijkstra's shortest path.
 	return nx.dijkstra_path(G, start, end)
