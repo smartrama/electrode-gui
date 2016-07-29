@@ -76,10 +76,6 @@ def geodesic3D(start, end, mask):
 	ncol = int(ncol)
 	nlay = int(nlay)
 	G = nx.Graph()
-	shape_i = nrow - zero_i
-	shape_j = ncol - zero_j
-	shape_k = nlay - zero_k
-	print shape_i, shape_j, shape_k
 
 	# Populate graph with nodes, with i being the row number and j being the column number.
 	for i in xrange(zero_i, nrow):
