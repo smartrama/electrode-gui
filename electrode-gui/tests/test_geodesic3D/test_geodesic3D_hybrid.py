@@ -113,7 +113,7 @@ class TestGeodesicDistance(unittest.TestCase):
 
             nib_start = time.clock()
             # Create spheres of radius
-            for point in traversal_path:
+            for point in elec_grid:
                 res[point[0]-radius:point[0]+radius,
                     point[1]-radius:point[1]+radius,
                     point[2]-radius:point[2]+radius] = 1
