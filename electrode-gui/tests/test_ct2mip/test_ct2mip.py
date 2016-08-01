@@ -43,12 +43,11 @@ class TestCT2MIP(unittest.TestCase):
            	img = nib.load(path.expanduser(seg_filename))
            	ct_data = img.get_data()
 
-           	mip = ct2mip(ct_data, theta, phi)
+           	mip = ct2mip(ct_data, 2, theta, phi)
 
            	plt.imshow(mip)
     		plt.show()
     		
-
         	return True
        	except Exception, e:
            	print str(e)
