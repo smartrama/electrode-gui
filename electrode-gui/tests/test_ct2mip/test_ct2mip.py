@@ -38,14 +38,12 @@ class TestCT2MIP(unittest.TestCase):
 
         """
         try:
-        	start = time.clock()
             # Load the segmentation file
          	seg_filename = '%s/%s_unburied_electrode_seg.nii.gz'%(DATA_DIR, patient_id)
            	img = nib.load(path.expanduser(seg_filename))
            	ct_data = img.get_data()
 
            	mip = ct2mip(ct_data, theta, phi)
-           	print 'Generating MIP took: %s s' % ((time.clock()-start))
 
            	plt.imshow(mip)
     		plt.show()
@@ -59,7 +57,7 @@ class TestCT2MIP(unittest.TestCase):
     def test_ct2mip_test_1(self):
         """Unit test for patient HUP64."""
         patient_id = 'HUP64'
-        theta = 90
+        theta = 135
         phi = 90
         return self.test_patients(patient_id, theta, phi)
 
