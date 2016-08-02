@@ -55,8 +55,8 @@ class TestCT2MIP(unittest.TestCase):
     def test_ct2mip_test_1(self):
         """Unit test for patient HUP64."""
         patient_id = 'HUP64'
-        theta = 135
-        phi = 45
+        theta = 0
+        phi = 0
         return self.test_patients(patient_id, theta, phi)
 
     def test_ct2mip_test_2(self):
