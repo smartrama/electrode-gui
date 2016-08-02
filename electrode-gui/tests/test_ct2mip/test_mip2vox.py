@@ -14,7 +14,7 @@ import numpy as np
 import nibabel as nib
 import matplotlib.pyplot as plt
 
-from ct2mip import ct2mip
+from mip2vox import mip2vox
 
 __version__ = '0.0'
 __author__ = 'Lohith Kini'
@@ -42,10 +42,9 @@ class TestCT2MIP(unittest.TestCase):
            	img = nib.load(path.expanduser(seg_filename))
            	ct_data = img.get_data()
 
-           	mip = ct2mip(ct_data, 1, theta, phi)
+           	vox = mip2vox(78, 75, theta, phi, ct_data)
 
-           	plt.imshow(mip)
-    		plt.show()
+           	print vox
     		
         	return True
        	except Exception, e:
