@@ -42,7 +42,7 @@ class TestCT2MIP(unittest.TestCase):
            	img = nib.load(path.expanduser(seg_filename))
            	ct_data = img.get_data()
 
-           	vox = mip2vox(78, 75, theta, phi, ct_data)
+           	vox = mip2vox(96, 93, theta, phi, ct_data)
 
            	print vox
     		
@@ -54,8 +54,8 @@ class TestCT2MIP(unittest.TestCase):
     def test_ct2mip_test_1(self):
         """Unit test for patient HUP64."""
         patient_id = 'HUP64'
-        theta = 0
-        phi = 0
+        theta = 135
+        phi = 45
         return self.test_patients(patient_id, theta, phi)
 
     def test_ct2mip_test_2(self):
