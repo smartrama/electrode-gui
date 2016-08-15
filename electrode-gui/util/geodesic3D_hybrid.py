@@ -44,10 +44,7 @@ def geodesic3D_hybrid(A, B, C, D, m, n, mask):
 		start = d[A2C][i]
 		end = d[B2D][i]
 		pairs = interpol(start, end, [], 1, n)
-		j = 0
-		while j < len(pairs.values()) - 3:
-			grid.append((pairs.values()[j], pairs.values()[j+1], pairs.values()[j+2]))
-			j += 3
+		grid.append(pairs[1:-1])
 	grid.append(d[B2D])
 	grid = list(itertools.chain(*grid))
 

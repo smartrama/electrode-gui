@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial import distance
 import time
 
 def elec_snap(interpol_coords, segment):
@@ -11,7 +10,7 @@ def elec_snap(interpol_coords, segment):
 
 	snap_coords = []
 	for x in interpol_coords:
-		dists = [distance.euclidean(y, x) for y in elec]
+		dists = [np.linalg.norm(x-y) for y in elec]
 		min_index = dists.index(min(dists))
 		snap_coords.append(elec[min_index])
 		

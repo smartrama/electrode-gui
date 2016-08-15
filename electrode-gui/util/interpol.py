@@ -163,8 +163,8 @@ def interpol_grid(coor1,coor2,coor3,m,n):
         names.append("GRID %d" % count)
     names = names[0:-1]
     elec_coor = elec_coor[0:-1]
-    pairs = dict(zip(names, elec_coor))
-    return pairs
+    # pairs = dict(zip(names, elec_coor))
+    return elec_coor
 
 def interpol_strip(coor1, coor2, m, n):
     ''' returns the coordinates of all interpolated electrodes in a
@@ -211,5 +211,5 @@ def interpol_strip(coor1, coor2, m, n):
         names.append("GRID %d" % count)
     names = names[0:-1]
     elec_coor = elec_coor[0:-1]
-    pairs = dict(zip(names, elec_coor))
-    return pairs
+    # pairs = dict(zip(names, elec_coor))
+    return elec_coor
