@@ -20,6 +20,7 @@ import nibabel as nib
 import json
 
 from interpol import interpol
+from elec_snap import elec_snap
 
 __version__ = '0.1'
 __author__ = 'Lohith Kini'
@@ -78,7 +79,7 @@ class TestInterpolation(unittest.TestCase):
             res = np.zeros(seg_data.shape)
 
             # Set the output file name
-            out_filename = seg_filename[:-35] + '%s_interpol.nii.gz'%patient_id
+            out_filename = seg_filename[:-35] + '%s_snap.nii.gz'%patient_id
 
             # Interpolate on the 2-3 corners
             grid = data[patient_id]["1"]["grid_config"]
@@ -104,12 +105,20 @@ class TestInterpolation(unittest.TestCase):
                 (time.clock()-interpol_start)*1000
                 )
 
+            interpol_coords = pairs.values()
+
+            snap_start = time.clock()
+            elec_snap_coords = elec_snap(interpol_coords, seg_data)
+            print 'Snap took: %s s'%(
+                (time.clock()-snap_start)
+                )
+
             nib_start = time.clock()
             # Create spheres of radius
-            for k,v in pairs.items():
-                res[v[0]-radius:v[0]+radius,
-                    v[1]-radius:v[1]+radius,
-                    v[2]-radius:v[2]+radius] = 1
+            for x in elec_snap_coords:
+                res[x[0]-radius:x[0]+radius,
+                    x[1]-radius:x[1]+radius,
+                    x[2]-radius:x[2]+radius] = 1
 
             # Save res as new output result file
             res_nifti = nib.Nifti1Image(res,seg.get_affine())
@@ -154,4 +163,4 @@ class TestInterpolation(unittest.TestCase):
 
 if __name__ == '__main__':
     ti = TestInterpolation()
-    ti.test_HUP64()
+    ti.test_HUP65()
