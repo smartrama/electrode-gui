@@ -19,8 +19,6 @@ def mip2vox(x, y, theta, phi, ct):
 	ray = list(ct[::,x,y])
 	z = ray.index(max(ray))
 	print 'Finding max took: %s s' % ((time.clock()-start_2))
-	plt.imshow(np.rot90(ct[z,::,::]))
-	plt.show()
 
 	def rotate(origin, point, angle):
 		"""

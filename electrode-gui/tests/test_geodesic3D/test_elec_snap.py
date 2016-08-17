@@ -97,33 +97,31 @@ class TestGeodesicDistance(unittest.TestCase):
 
             interpol_start = time.clock()
 
-            # elec_grid = geodesic3D_hybrid(
-            #     tuple(data[patient_id]["1"]["A"]),
-            #     tuple(data[patient_id]["1"]["B"]),
-            #     tuple(data[patient_id]["1"]["C"]),
-            #     tuple(data[patient_id]["1"]["D"]),
-            #     M,
-            #     N,
-            #     mask_data
-            #     )
-
-            if M == 1 or N == 1:
-                elec_grid = interpol(data[patient_id]["1"]["A"],
-                            data[patient_id]["1"]["B"],[],
-                            M,N)
-            else:
-                elec_grid = interpol(data[patient_id]["1"]["A"],
-                                data[patient_id]["1"]["B"],
-                                data[patient_id]["1"]["C"],
-                                M,N)
-
-            print 'Interpolation took: %s s'%(
-                (time.clock()-interpol_start)
+            elec_grid = geodesic3D_hybrid(
+                tuple(data[patient_id]["1"]["A"]),
+                tuple(data[patient_id]["1"]["B"]),
+                tuple(data[patient_id]["1"]["C"]),
+                tuple(data[patient_id]["1"]["D"]),
+                M,
+                N,
+                mask_data
                 )
 
-            snap_start = time.clock()
+            # if M == 1 or N == 1:
+            #     elec_grid = interpol(data[patient_id]["1"]["A"],
+            #                 data[patient_id]["1"]["B"],[],
+            #                 M,N)
+            # else:
+            #     elec_grid = interpol(data[patient_id]["1"]["A"],
+            #                     data[patient_id]["1"]["B"],
+            #                     data[patient_id]["1"]["C"],
+            #                     M,N)
+
             elec_snap_coords = elec_snap(elec_grid, seg_data)
-            print 'Snap took: %s ms'%((time.clock()-snap_start)*1000)
+
+            print 'Interpolation took: %s ms'%(
+                (time.clock()-interpol_start)*1000
+                )
 
             nib_start = time.clock()
             # Create spheres of radius
@@ -155,10 +153,15 @@ class TestGeodesicDistance(unittest.TestCase):
 
     def test_geodesic3D_test_3(self):
         """Unit test for patient geodesic2D_test_3."""
-        patient_id = 'HUP86'
+        patient_id = 'HUP72'
         return self.test_patients(patient_id)
 
     def test_geodesic3D_test_4(self):
+        """Unit test for patient geodesic2D_test_3."""
+        patient_id = 'HUP86'
+        return self.test_patients(patient_id)
+
+    def test_geodesic3D_test_5(self):
         """Unit test for patient geodesic2D_test_3."""
         patient_id = 'HUP87'
         return self.test_patients(patient_id)
