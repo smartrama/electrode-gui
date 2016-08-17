@@ -5,7 +5,7 @@ def elec_snap(interpol_coords, segment):
 	interpol_coords = np.asarray(interpol_coords)
 
 	scan_start = time.clock()
-	elec = np.argwhere(segment > 1)
+	elec = np.argwhere(segment > 1500)
 	print 'Scan took: %s ms'%((time.clock()-scan_start)*1000)
 
 	snap_coords = []

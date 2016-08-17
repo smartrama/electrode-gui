@@ -42,7 +42,7 @@ class TestCT2MIP(unittest.TestCase):
            	img = nib.load(path.expanduser(seg_filename))
            	ct_data = img.get_data()
 
-           	vox = mip2vox(96, 93, theta, phi, ct_data)
+           	vox = mip2vox(163, 132, theta, phi, ct_data)
 
            	print vox
     		

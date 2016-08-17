@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.ndimage.interpolation as sci
+from PIL import Image
 import time
 import matplotlib.pyplot as plt
 import math
@@ -7,18 +7,25 @@ import math
 # Takes in MIP coordinates and returns 3D voxel coordinates.
 
 def mip2vox(x, y, theta, phi, ct):
-	start = time.clock()
-	ct = sci.rotate(ct, -theta, axes=(0,1), reshape=False)
-	ct = sci.rotate(ct, -phi, axes=(0,2), reshape=False)
-	print 'Rotating took: %s s' % ((time.clock()-start))
-	start_2 = time.clock()
 	y_lim = ct.shape[2]	
 	z_lim = ct.shape[0]
 	x_lim = ct.shape[1]
+	start = time.clock()
+	for i in xrange(ct.shape[2]):
+	    layer = ct[::,::,i]
+	    ct[::,::,i] = (Image.fromarray(layer).rotate(-theta))
+	for j in xrange(ct.shape[1]):
+		layer = ct[::,j,::]
+		ct[::,j,::] = (Image.fromarray(layer).rotate(-phi))
+	print 'Rotating took: %s ms' % ((time.clock()-start)*1000)
+	start_2 = time.clock()
 	y = y_lim-y
 	ray = list(ct[::,x,y])
 	z = ray.index(max(ray))
-	print 'Finding max took: %s s' % ((time.clock()-start_2))
+	print 'Finding max took: %s ms' % ((time.clock()-start_2)*1000)
+
+	# plt.imshow(ct[z,::,::])
+	# plt.show()
 
 	def rotate(origin, point, angle):
 		"""

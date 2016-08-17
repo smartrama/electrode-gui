@@ -15,7 +15,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import json
 
-from geodesic3D_hybrid import geodesic3D_hybrid
+from geodesic3D_hybrid_lite import geodesic3D_hybrid
 from interpol import interpol
 from elec_snap import elec_snap
 

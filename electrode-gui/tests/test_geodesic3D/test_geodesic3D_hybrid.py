@@ -17,7 +17,7 @@ import nibabel as nib
 import matplotlib.pyplot as plt
 import json
 
-from geodesic3D_hybrid_2 import geodesic3D_hybrid
+from geodesic3D_hybrid import geodesic3D_hybrid
 
 __version__ = '0.0'
 __author__ = 'Lohith Kini'

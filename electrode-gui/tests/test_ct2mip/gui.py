@@ -45,6 +45,9 @@ class Example(Frame):
         interpolButton = Button(self, text="Interpolate!", command=self.interpolate)
         interpolButton.place(x=0, y=40)
 
+        resetButton = Button(self, text="Reset", command=self.resett)
+        resetButton.place(x=0, y=80)
+
         logo_path = '%s/logo.png'%(DATA_DIR)
         logo = Image.open(logo_path)
         logo = ImageTk.PhotoImage(logo)
@@ -88,12 +91,14 @@ class Example(Frame):
         # os.system(dilation_command)
 
         ct_filename = '%s/%s_CTIEEG_deformed.nii.gz'%(DATA_DIR, patient_id)
+        # ct_filename = '%s/%s_unburied_electrode_seg.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(ct_filename))
         global ct_data
         ct_data = img.get_data()
 
         ## IN REAL CODE CHANGE THE NAME OF THE MASK TO 'BrainExtractionMaskDilated.nii.gz'
         mask_filename = '%s/%s_BrainSegmentationMaskDilated.nii.gz'%(DATA_DIR, patient_id)
+        # mask_filename = '%s/%s_brain_mask.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(mask_filename))
         global mask_data
         mask_data = img.get_data()
@@ -108,7 +113,7 @@ class Example(Frame):
         global phi
         theta = 0
         phi = 0
-        mip = ct2mip(ct_data, 2, theta, phi)
+        mip = ct2mip(ct_data, 1, theta, phi)
 
         f = Figure(figsize=(5,5), dpi=100)
         global a
@@ -141,9 +146,9 @@ class Example(Frame):
         xpress, ypress = self.press
         dx = event.xdata - xpress
         dy = event.ydata - ypress
-        theta = -dx * 3
-        phi = dy * 3
-        mip = ct2mip(ct_data, 2, theta, phi)
+        theta = -dx * 0.5
+        phi = dy * 0.5
+        mip = ct2mip(ct_data, 1, theta, phi)
         a.imshow(mip)
         canvas.show()
 
@@ -202,12 +207,17 @@ class Example(Frame):
         B_vox = mip2vox(B[0], B[1], theta, phi, ct_data)
         C_vox = mip2vox(C[0], C[1], theta, phi, ct_data)
         D_vox = mip2vox(D[0], D[1], theta, phi, ct_data)
-        # elec_coord = geodesic3D_hybrid(A_vox, B_vox, C_vox, D_vox, 8, 8, mask_data)
+        # elec_coord = geodesic3D_hybrid(A_vox, B_vox, D_vox, C_vox, 8, 8, mask_data)
         elec_coord = interpol(A_vox, B_vox, C_vox, 8, 8)
         snap_coords = elec_snap(elec_coord, ct_data)
         for point in snap_coords:
-            ct_data[point[0]-2:point[0]+2, point[1]-2:point[1]+2, point[2]-2:point[2]+2] = -1000
-        mip = ct2mip(ct_data, 2, theta, phi)
+            ct_data[point[0]-2:point[0]+2, point[1]-2:point[1]+2, point[2]-2:point[2]+2] = 5000
+        mip = ct2mip(ct_data, 1, theta, phi)
+        a.imshow(mip)
+        canvas.show()
+
+    def resett(self):
+        mip = ct2mip(ct_data, 1, 0, 0)
         a.imshow(mip)
         canvas.show()
 

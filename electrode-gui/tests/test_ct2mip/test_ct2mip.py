@@ -43,7 +43,7 @@ class TestCT2MIP(unittest.TestCase):
             ct_data = img.get_data()
 
             mip_start = time.clock()
-            mip = ct2mip(ct_data, 2, theta, phi)
+            mip = ct2mip(ct_data, 1, theta, phi)
             print "Making MIP took: %s s"%(time.clock()-mip_start)
 
             plt.imshow(mip)
