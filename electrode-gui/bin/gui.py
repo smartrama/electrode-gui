@@ -14,14 +14,14 @@ import nibabel as nib
 from os import path
 import os
 import sys
-sys.path.append(path.abspath('../../util'))
+sys.path.append(path.abspath('../util'))
 from ct2mip import ct2mip
 from mip2vox import mip2vox
 from interpol import interpol
 from geodesic3D_hybrid_lite import geodesic3D_hybrid
 from elec_snap import elec_snap
 
-DATA_DIR = 'data/'
+DATA_DIR = '../tests/test_ct2mip/data/'
 patient_id = 'HUP64'
 
 class Example(Frame):
@@ -143,6 +143,20 @@ class Example(Frame):
         self.press = event.xdata, event.ydata
 
     def on_motion(self, event):
+        try:
+            xpress, ypress = self.press
+            dx = event.xdata - xpress
+            dy = event.ydata - ypress
+            theta = -dx * 0.5
+            phi = dy * 0.5
+            mip = ct2mip(ct_data, 1, theta, phi)
+            a.imshow(mip)
+            canvas.show()
+        except Exception:
+            pass
+
+    def on_release(self, event):
+        # on release we reset the press data
         xpress, ypress = self.press
         dx = event.xdata - xpress
         dy = event.ydata - ypress
@@ -151,9 +165,6 @@ class Example(Frame):
         mip = ct2mip(ct_data, 1, theta, phi)
         a.imshow(mip)
         canvas.show()
-
-    def on_release(self, event):
-        # on release we reset the press data
         self.press = None
 
     def checkbutton_value(self):
