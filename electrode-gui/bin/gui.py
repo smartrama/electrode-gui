@@ -3,6 +3,7 @@
 
 from Tkinter import Tk, BOTH
 import Tkinter as tk
+from Tkinter import Grid
 from ttk import Frame, Button, Style, Checkbutton, Label, Entry
 import matplotlib
 matplotlib.use("TkAgg")
@@ -30,51 +31,61 @@ class Example(Frame):
         Frame.__init__(self, parent)  
         self.parent = parent
         self.press = None
+        self.grid(sticky=tk.N+tk.E+tk.S+tk.W)
         self.load_frame()
         self.load_mip()
         self.plot_mip()
 
+        # Create rotate checkbutton
         global var1
         var1 = tk.BooleanVar()    
-        rotateButton = Checkbutton(self, text = "Rotate", variable = var1, command=self.checkbutton_value)
-        rotateButton.place(x=200, y=0)
+        rotateButton = Checkbutton(self, text = "Rotate", variable = var1, command=self.checkbutton_value1)
+        rotateButton.grid(row=1, column=0, sticky=tk.E)
 
+        # Create click checkbutton
+        global var2
+        var2 = tk.BooleanVar()    
+        clickButton = Checkbutton(self, text = "Click", variable = var2, command=self.checkbutton_value2)
+        clickButton.grid(row=1, column=1)
+
+        # Create quit button
         quitButton = Button(self, text="Quit", command=self.quit)
-        quitButton.place(x=0, y=0)
+        quitButton.grid(row=0, column=0, sticky=tk.N+tk.W)
 
+        # Create interpolate button
         interpolButton = Button(self, text="Interpolate!", command=self.interpolate)
-        interpolButton.place(x=0, y=40)
+        interpolButton.grid(row=3, column=0, sticky=tk.S+tk.W)
 
-        resetButton = Button(self, text="Reset", command=self.resett)
-        resetButton.place(x=0, y=80)
+        # resetButton = Button(self, text="Reset", command=self.resett)
+        # resetButton.grid(row=4,column=0)
 
         logo_path = '%s/logo.png'%(DATA_DIR)
         logo = Image.open(logo_path)
         logo = ImageTk.PhotoImage(logo)
         label1 = Label(self, image=logo)
-        label1.place(x=470, y=0)
+        label1.grid(row=0, rowspan=4, column=3)
         label1.image = logo
 
         label_a = Label(self, text= "A:")
-        label_a.place(x=190, y=20)
+        label_a.grid(row=0, column=1, sticky=tk.E+tk.S)
         global coord_a
         coord_a = Entry(self)
-        coord_a.place(x=200, y=20)
+        coord_a.grid(row=0, column=2, sticky=tk.W+tk.S)
         label_b = Label(self, text= "B:")
-        label_b.place(x=190, y=40)
+        label_b.grid(row=1, column=1, sticky=tk.E+tk.N)
         global coord_b
         coord_b = Entry(self)
-        coord_b.place(x=200, y=40)
+        coord_b.grid(row=1, column=2, sticky=tk.W+tk.N)
         label_c = Label(self, text= "C:")
-        label_c.place(x=190, y=60)
+        label_c.grid(row=2, column=1, sticky=tk.E+tk.N)
         global coord_c
         coord_c = Entry(self)
-        coord_c.place(x=200, y=60)
+        coord_c.grid(row=2, column=2, sticky=tk.W+tk.N)
         label_d = Label(self, text= "D:")
-        label_d.place(x=190, y=80)
+        label_d.grid(row=3, column=1, sticky=tk.E+tk.N)
         global coord_d
         coord_d = Entry(self)
-        coord_d.place(x=200, y=80)
+        coord_d.grid(row=3, column=2, sticky=tk.W+tk.N)
 
         global count
         count = 0
@@ -83,7 +94,7 @@ class Example(Frame):
         self.parent.title("Electrode GUI")
         self.style = Style()
         self.style.theme_use("default")
-        self.pack(fill=BOTH, expand=1)
+        self.grid()
         
     def load_mip(self):
 
@@ -91,14 +102,12 @@ class Example(Frame):
         # os.system(dilation_command)
 
         ct_filename = '%s/%s_CTIEEG_deformed.nii.gz'%(DATA_DIR, patient_id)
-        # ct_filename = '%s/%s_unburied_electrode_seg.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(ct_filename))
         global ct_data
         ct_data = img.get_data()
 
         ## IN REAL CODE CHANGE THE NAME OF THE MASK TO 'BrainExtractionMaskDilated.nii.gz'
         mask_filename = '%s/%s_BrainSegmentationMaskDilated.nii.gz'%(DATA_DIR, patient_id)
-        # mask_filename = '%s/%s_brain_mask.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(mask_filename))
         global mask_data
         mask_data = img.get_data()
@@ -115,19 +124,53 @@ class Example(Frame):
         phi = 0
         mip = ct2mip(ct_data, 1, theta, phi)
 
-        f = Figure(figsize=(5,5), dpi=100)
+        global wind
+        wind = 50
+
+        f1 = Figure(figsize=(3,3), dpi=100)
         global a
-        a = f.add_subplot(111)
+        a = f1.add_subplot(111)
         a.imshow(mip)
 
-        global canvas
-        canvas = FigureCanvasTkAgg(f, self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        f2 = Figure(figsize=(1,1), dpi=100)
+        global b
+        b = f2.add_subplot(111)
+        b.imshow(np.zeros((wind*2,wind*2)))
 
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        f3 = Figure(figsize=(1,1), dpi=100)
+        global c
+        c = f3.add_subplot(111)
+        c.imshow(np.zeros((wind*2,wind*2)))
+
+        f4 = Figure(figsize=(1,1), dpi=100)
+        global d
+        d = f4.add_subplot(111)
+        d.imshow(np.zeros((wind*2,wind*2)))
+
+        global canvas
+        canvas = FigureCanvasTkAgg(f1, self)
+        canvas.show()
+        canvas.get_tk_widget().grid(row=4, rowspan=3, column=0, columnspan=3, sticky=tk.N+tk.E+tk.S+tk.W)
+
+        global canvas2
+        canvas2 = FigureCanvasTkAgg(f2, self)
+        canvas2.show()
+        canvas2.get_tk_widget().grid(row=4, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+
+        global canvas3
+        canvas3 = FigureCanvasTkAgg(f3, self)
+        canvas3.show()
+        canvas3.get_tk_widget().grid(row=5, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+
+        global canvas4
+        canvas4 = FigureCanvasTkAgg(f4, self)
+        canvas4.show()
+        canvas4.get_tk_widget().grid(row=6, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+
+        for x in xrange(4):
+            self.columnconfigure(x, weight=1)
+        for y in xrange(4,8):
+            self.rowconfigure(y, weight=1)
 
     def drag_mip(self):
         self.cidpress = canvas.mpl_connect('button_press_event', self.on_press)
@@ -167,13 +210,17 @@ class Example(Frame):
         canvas.show()
         self.press = None
 
-    def checkbutton_value(self):
+    def checkbutton_value1(self):
         if var1.get() == True:
            self.drag_mip()
            self.stop_click_mip()
-        else:
+           var2.set(False)
+
+    def checkbutton_value2(self):
+        if var2.get() == True:
             self.stop_drag_mip()
             self.click_mip()
+            var1.set(False)
     
     def on_click(self, event):
         if event.inaxes is not None:
@@ -186,18 +233,74 @@ class Example(Frame):
                 global A
                 A = (xcord, ycord)
                 coord_a.insert(0, str(A))
+                global A_vox
+                A_vox = mip2vox(A[0], A[1], theta, phi, ct_data)
+                b.imshow(ct_data[A_vox[0],
+                                A_vox[1]-wind:A_vox[1]+wind,
+                                A_vox[2]-wind:A_vox[2]+wind])
+                canvas2.show()
+                c.imshow(ct_data[A_vox[0]-wind:A_vox[0]+wind,
+                                A_vox[1],
+                                A_vox[2]-wind:A_vox[2]+wind])
+                canvas3.show()
+                d.imshow(ct_data[A_vox[0]-wind:A_vox[0]+wind,
+                                A_vox[1]-wind:A_vox[1]+wind,
+                                A_vox[2]])
+                canvas4.show()
             if count == 2:
                 global B
                 B = (xcord, ycord)
                 coord_b.insert(0, str(B))
+                global B_vox
+                B_vox = mip2vox(B[0], B[1], theta, phi, ct_data)
+                b.imshow(ct_data[B_vox[0],
+                                B_vox[1]-wind:B_vox[1]+wind,
+                                B_vox[2]-wind:B_vox[2]+wind])
+                canvas2.show()
+                c.imshow(ct_data[B_vox[0]-wind:B_vox[0]+wind,
+                                B_vox[1],
+                                B_vox[2]-wind:B_vox[2]+wind])
+                canvas3.show()
+                d.imshow(ct_data[B_vox[0]-wind:B_vox[0]+wind,
+                                B_vox[1]-wind:B_vox[1]+wind,
+                                B_vox[2]])
+                canvas4.show()
             if count == 3:
                 global C
                 C = (xcord, ycord)
                 coord_c.insert(0, str(C))
+                global C_vox
+                C_vox = mip2vox(C[0], C[1], theta, phi, ct_data)
+                b.imshow(ct_data[C_vox[0],
+                                C_vox[1]-wind:C_vox[1]+wind,
+                                C_vox[2]-wind:C_vox[2]+wind])
+                canvas2.show()
+                c.imshow(ct_data[C_vox[0]-wind:C_vox[0]+wind,
+                                C_vox[1],
+                                C_vox[2]-wind:C_vox[2]+wind])
+                canvas3.show()
+                d.imshow(ct_data[C_vox[0]-wind:C_vox[0]+wind,
+                                C_vox[1]-wind:C_vox[1]+wind,
+                                C_vox[2]])
+                canvas4.show()
             if count == 4:
                 global D
                 D = (xcord, ycord)
                 coord_d.insert(0, str(D))
+                global D_vox
+                D_vox = mip2vox(D[0], D[1], theta, phi, ct_data)
+                b.imshow(ct_data[D_vox[0],
+                                D_vox[1]-wind:D_vox[1]+wind,
+                                D_vox[2]-wind:D_vox[2]+wind])
+                canvas2.show()
+                c.imshow(ct_data[D_vox[0]-wind:D_vox[0]+wind,
+                                D_vox[1],
+                                D_vox[2]-wind:D_vox[2]+wind])
+                canvas3.show()
+                d.imshow(ct_data[D_vox[0]-wind:D_vox[0]+wind,
+                                D_vox[1]-wind:D_vox[1]+wind,
+                                D_vox[2]])
+                canvas4.show()
             if count == 5:
                 coord_a.delete(0,12)
                 coord_b.delete(0,12)
@@ -214,10 +317,6 @@ class Example(Frame):
         canvas.mpl_disconnect(self.mippress)
 
     def interpolate(self):
-        A_vox = mip2vox(A[0], A[1], theta, phi, ct_data)
-        B_vox = mip2vox(B[0], B[1], theta, phi, ct_data)
-        C_vox = mip2vox(C[0], C[1], theta, phi, ct_data)
-        D_vox = mip2vox(D[0], D[1], theta, phi, ct_data)
         # elec_coord = geodesic3D_hybrid(A_vox, B_vox, D_vox, C_vox, 8, 8, mask_data)
         elec_coord = interpol(A_vox, B_vox, C_vox, 8, 8)
         snap_coords = elec_snap(elec_coord, ct_data)
@@ -234,7 +333,11 @@ class Example(Frame):
 
 def main():
     root = tk.Tk()
-    root.geometry("800x800+300+300")
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+    width = root.winfo_screenwidth()
+    height = root.winfo_screenheight()
+    root.geometry("%sx%s+300+300"%(width, height))
     app = Example(root)
     root.mainloop()  
 
