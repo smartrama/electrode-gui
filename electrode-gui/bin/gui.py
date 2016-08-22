@@ -63,7 +63,7 @@ class Example(Frame):
         logo = Image.open(logo_path)
         logo = ImageTk.PhotoImage(logo)
         label1 = Label(self, image=logo)
-        label1.grid(row=0, rowspan=4, column=3)
+        label1.grid(row=0, rowspan=4, column=4)
         label1.image = logo
 
         label_a = Label(self, text= "A:")
@@ -116,6 +116,20 @@ class Example(Frame):
 
         np.copyto(ct_data, mask_data, where=mask_data_inv)
 
+        global min_z
+        global min_y
+        global min_x
+        global max_z
+        global max_y
+        global max_x
+        boundary = np.argwhere(mask_data == 1)
+        min_x = min(boundary[::,0])
+        min_y = min(boundary[::,1])
+        min_z = min(boundary[::,2])
+        max_x = max(boundary[::,0])
+        max_y = max(boundary[::,1])
+        max_z = max(boundary[::,2])
+
     def plot_mip(self):
 
         global theta
@@ -130,42 +144,50 @@ class Example(Frame):
         f1 = Figure(figsize=(3,3), dpi=100)
         global a
         a = f1.add_subplot(111)
+        a.xaxis.set_visible(False)
+        a.yaxis.set_visible(False)
         a.imshow(mip)
 
         f2 = Figure(figsize=(1,1), dpi=100)
         global b
         b = f2.add_subplot(111)
+        b.xaxis.set_visible(False)
+        b.yaxis.set_visible(False)
         b.imshow(np.zeros((wind*2,wind*2)))
 
         f3 = Figure(figsize=(1,1), dpi=100)
         global c
         c = f3.add_subplot(111)
+        c.xaxis.set_visible(False)
+        c.yaxis.set_visible(False)
         c.imshow(np.zeros((wind*2,wind*2)))
 
         f4 = Figure(figsize=(1,1), dpi=100)
         global d
         d = f4.add_subplot(111)
+        d.xaxis.set_visible(False)
+        d.yaxis.set_visible(False)
         d.imshow(np.zeros((wind*2,wind*2)))
 
         global canvas
         canvas = FigureCanvasTkAgg(f1, self)
         canvas.show()
-        canvas.get_tk_widget().grid(row=4, rowspan=3, column=0, columnspan=3, sticky=tk.N+tk.E+tk.S+tk.W)
+        canvas.get_tk_widget().grid(row=4, rowspan=3, column=1, columnspan=3, sticky=tk.N+tk.E+tk.S+tk.W)
 
         global canvas2
         canvas2 = FigureCanvasTkAgg(f2, self)
         canvas2.show()
-        canvas2.get_tk_widget().grid(row=4, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+        canvas2.get_tk_widget().grid(row=4, rowspan=1, column=4, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
 
         global canvas3
         canvas3 = FigureCanvasTkAgg(f3, self)
         canvas3.show()
-        canvas3.get_tk_widget().grid(row=5, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+        canvas3.get_tk_widget().grid(row=5, rowspan=1, column=4, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
 
         global canvas4
         canvas4 = FigureCanvasTkAgg(f4, self)
         canvas4.show()
-        canvas4.get_tk_widget().grid(row=6, rowspan=1, column=3, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
+        canvas4.get_tk_widget().grid(row=6, rowspan=1, column=4, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
 
         for x in xrange(4):
             self.columnconfigure(x, weight=1)
@@ -236,16 +258,16 @@ class Example(Frame):
                 global A_vox
                 A_vox = mip2vox(A[0], A[1], theta, phi, ct_data)
                 b.imshow(ct_data[A_vox[0],
-                                A_vox[1]-wind:A_vox[1]+wind,
-                                A_vox[2]-wind:A_vox[2]+wind])
+                                min_y:max_y,
+                                min_z:max_z], cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[A_vox[0]-wind:A_vox[0]+wind,
+                c.imshow(ct_data[min_x:max_x,
                                 A_vox[1],
-                                A_vox[2]-wind:A_vox[2]+wind])
+                                min_z:max_z], cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[A_vox[0]-wind:A_vox[0]+wind,
-                                A_vox[1]-wind:A_vox[1]+wind,
-                                A_vox[2]])
+                d.imshow(ct_data[min_x:max_x,
+                                min_y:max_y,
+                                A_vox[2]], cmap="Greys_r")
                 canvas4.show()
             if count == 2:
                 global B
@@ -254,16 +276,16 @@ class Example(Frame):
                 global B_vox
                 B_vox = mip2vox(B[0], B[1], theta, phi, ct_data)
                 b.imshow(ct_data[B_vox[0],
-                                B_vox[1]-wind:B_vox[1]+wind,
-                                B_vox[2]-wind:B_vox[2]+wind])
+                                min_y:max_y,
+                                min_z:max_z], cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[B_vox[0]-wind:B_vox[0]+wind,
+                c.imshow(ct_data[min_x:max_x,
                                 B_vox[1],
-                                B_vox[2]-wind:B_vox[2]+wind])
+                                min_z:max_z], cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[B_vox[0]-wind:B_vox[0]+wind,
-                                B_vox[1]-wind:B_vox[1]+wind,
-                                B_vox[2]])
+                d.imshow(ct_data[min_x:max_x,
+                                min_y:max_y,
+                                B_vox[2]], cmap="Greys_r")
                 canvas4.show()
             if count == 3:
                 global C
@@ -272,16 +294,16 @@ class Example(Frame):
                 global C_vox
                 C_vox = mip2vox(C[0], C[1], theta, phi, ct_data)
                 b.imshow(ct_data[C_vox[0],
-                                C_vox[1]-wind:C_vox[1]+wind,
-                                C_vox[2]-wind:C_vox[2]+wind])
+                                min_y:max_y,
+                                min_z:max_z], cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[C_vox[0]-wind:C_vox[0]+wind,
+                c.imshow(ct_data[min_x:max_x,
                                 C_vox[1],
-                                C_vox[2]-wind:C_vox[2]+wind])
+                                min_z:max_z], cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[C_vox[0]-wind:C_vox[0]+wind,
-                                C_vox[1]-wind:C_vox[1]+wind,
-                                C_vox[2]])
+                d.imshow(ct_data[min_x:max_x,
+                                min_y:max_y,
+                                C_vox[2]], cmap="Greys_r")
                 canvas4.show()
             if count == 4:
                 global D
@@ -290,16 +312,16 @@ class Example(Frame):
                 global D_vox
                 D_vox = mip2vox(D[0], D[1], theta, phi, ct_data)
                 b.imshow(ct_data[D_vox[0],
-                                D_vox[1]-wind:D_vox[1]+wind,
-                                D_vox[2]-wind:D_vox[2]+wind])
+                                min_y:max_y,
+                                min_z:max_z], cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[D_vox[0]-wind:D_vox[0]+wind,
+                c.imshow(ct_data[min_x:max_x,
                                 D_vox[1],
-                                D_vox[2]-wind:D_vox[2]+wind])
+                                min_z:max_z], cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[D_vox[0]-wind:D_vox[0]+wind,
-                                D_vox[1]-wind:D_vox[1]+wind,
-                                D_vox[2]])
+                d.imshow(ct_data[min_x:max_x,
+                                min_y:max_y,
+                                D_vox[2]], cmap="Greys_r")
                 canvas4.show()
             if count == 5:
                 coord_a.delete(0,12)
