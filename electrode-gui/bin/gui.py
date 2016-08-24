@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
+from skimage import measure
 from PIL import Image, ImageTk
 import numpy as np
 import nibabel as nib
@@ -59,6 +60,7 @@ class Example(Frame):
         # resetButton = Button(self, text="Reset", command=self.resett)
         # resetButton.grid(row=4,column=0)
 
+        # Add CNT logo
         logo_path = '%s/logo.png'%(DATA_DIR)
         logo = Image.open(logo_path)
         logo = ImageTk.PhotoImage(logo)
@@ -66,6 +68,7 @@ class Example(Frame):
         label1.grid(row=0, rowspan=4, column=4)
         label1.image = logo
 
+        # Create labels and display boxes for selected points
         label_a = Label(self, text= "A:")
         label_a.grid(row=0, column=1, sticky=tk.E+tk.S)
         global coord_a
@@ -87,6 +90,7 @@ class Example(Frame):
         coord_d = Entry(self)
         coord_d.grid(row=3, column=2, sticky=tk.W+tk.N)
 
+        # Initialized count variable that will be used to regulate number of corners
         global count
         count = 0
 
@@ -101,11 +105,13 @@ class Example(Frame):
         # dilation_command = '$ANTSPATH/ImageMath 3 %s_BrainExtractionMaskDilated.nii.gz MD %s_BrainExtractionMask.nii.gz 1'%(patient_id, patient_id)
         # os.system(dilation_command)
 
+        # Load in CT image
         ct_filename = '%s/%s_CTIEEG_deformed.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(ct_filename))
         global ct_data
         ct_data = img.get_data()
 
+        # Load in brain mask and superimpose it on CT image
         ## IN REAL CODE CHANGE THE NAME OF THE MASK TO 'BrainExtractionMaskDilated.nii.gz'
         mask_filename = '%s/%s_BrainSegmentationMaskDilated.nii.gz'%(DATA_DIR, patient_id)
         img = nib.load(os.path.expanduser(mask_filename))
@@ -116,6 +122,7 @@ class Example(Frame):
 
         np.copyto(ct_data, mask_data, where=mask_data_inv)
 
+        # Create boundary box of brain mask so that orthogonal views only contain brain regions
         global min_z
         global min_y
         global min_x
@@ -130,8 +137,13 @@ class Example(Frame):
         max_y = max(boundary[::,1])
         max_z = max(boundary[::,2])
 
+        global ct_thresh
+        ct_thresh = np.where(ct_data > 2000, 1, 0)
+        ct_thresh = measure.label(ct_thresh)
+
     def plot_mip(self):
 
+        # Initialize theta and phi (MIP camera angle variables) and generate MIP
         global theta
         global phi
         theta = 0
@@ -141,6 +153,7 @@ class Example(Frame):
         global wind
         wind = 50
 
+        # Initialize main figure window that will contain MIP
         f1 = Figure(figsize=(3,3), dpi=100)
         global a
         a = f1.add_subplot(111)
@@ -148,6 +161,7 @@ class Example(Frame):
         a.yaxis.set_visible(False)
         a.imshow(mip)
 
+        # Initialize first orthogonal figure window
         f2 = Figure(figsize=(1,1), dpi=100)
         global b
         b = f2.add_subplot(111)
@@ -155,6 +169,7 @@ class Example(Frame):
         b.yaxis.set_visible(False)
         b.imshow(np.zeros((wind*2,wind*2)))
 
+        # Initialize second orthogonal figure window
         f3 = Figure(figsize=(1,1), dpi=100)
         global c
         c = f3.add_subplot(111)
@@ -162,6 +177,7 @@ class Example(Frame):
         c.yaxis.set_visible(False)
         c.imshow(np.zeros((wind*2,wind*2)))
 
+        # Initialize third orthogonal figure window
         f4 = Figure(figsize=(1,1), dpi=100)
         global d
         d = f4.add_subplot(111)
@@ -169,6 +185,7 @@ class Example(Frame):
         d.yaxis.set_visible(False)
         d.imshow(np.zeros((wind*2,wind*2)))
 
+        # Incorporate figures into canvas widgets in Tkinter
         global canvas
         canvas = FigureCanvasTkAgg(f1, self)
         canvas.show()
@@ -189,25 +206,30 @@ class Example(Frame):
         canvas4.show()
         canvas4.get_tk_widget().grid(row=6, rowspan=1, column=4, columnspan=1, sticky=tk.N+tk.E+tk.S+tk.W)
 
+        # Specify which grid spaces should expand
         for x in xrange(4):
             self.columnconfigure(x, weight=1)
         for y in xrange(4,8):
             self.rowconfigure(y, weight=1)
 
     def drag_mip(self):
+        # Connect event with callback function
         self.cidpress = canvas.mpl_connect('button_press_event', self.on_press)
         self.cidmotion = canvas.mpl_connect('motion_notify_event', self.on_motion)
         self.cidrelease = canvas.mpl_connect('button_release_event', self.on_release)
 
     def stop_drag_mip(self):
+        # Disconnect event from callback function
         canvas.mpl_disconnect(self.cidpress)
         canvas.mpl_disconnect(self.cidmotion)
         canvas.mpl_disconnect(self.cidrelease)
 
     def on_press(self, event):
+        # Store coordinate data from button press event
         self.press = event.xdata, event.ydata
 
     def on_motion(self, event):
+        # From mouse motion event, detect displacement of mouse and adjust/show MIP accordingly
         try:
             xpress, ypress = self.press
             dx = event.xdata - xpress
@@ -221,7 +243,7 @@ class Example(Frame):
             pass
 
     def on_release(self, event):
-        # on release we reset the press data
+        # On release of button, final MIP is calculated and press data is reset
         xpress, ypress = self.press
         dx = event.xdata - xpress
         dy = event.ydata - ypress
@@ -233,12 +255,14 @@ class Example(Frame):
         self.press = None
 
     def checkbutton_value1(self):
+        # Logic that enables "click and drag" mode and disables "mip click" mode
         if var1.get() == True:
            self.drag_mip()
            self.stop_click_mip()
            var2.set(False)
 
     def checkbutton_value2(self):
+        # Logic that enables "mip click" mode and disables "click and drag" mode
         if var2.get() == True:
             self.stop_drag_mip()
             self.click_mip()
@@ -257,35 +281,55 @@ class Example(Frame):
                 coord_a.insert(0, str(A))
                 global A_vox
                 A_vox = mip2vox(A[0], A[1], theta, phi, ct_data)
-                b.imshow(ct_data[A_vox[0],
+                tmp = ct_data[A_vox[0],
                                 min_y:max_y,
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                tmp = np.fliplr(tmp)
+                b.imshow(tmp, cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 A_vox[1],
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                c.imshow(tmp, cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 min_y:max_y,
-                                A_vox[2]], cmap="Greys_r")
+                                A_vox[2]]
+                tmp = np.rot90(tmp)
+                d.imshow(tmp, cmap="Greys_r")
                 canvas4.show()
+                # pts = np.argwhere(ct_thresh == ct_thresh[A_vox[0], A_vox[1], A_vox[2]])
+                # ct_data[pts] = 2000
+                # mip = ct2mip(ct_data, 1, theta, phi)
+                # a.imshow(mip)
+                # canvas.show()
+
             if count == 2:
                 global B
                 B = (xcord, ycord)
                 coord_b.insert(0, str(B))
                 global B_vox
                 B_vox = mip2vox(B[0], B[1], theta, phi, ct_data)
-                b.imshow(ct_data[B_vox[0],
+                tmp = ct_data[B_vox[0],
                                 min_y:max_y,
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                tmp = np.fliplr(tmp)
+                b.imshow(tmp, cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 B_vox[1],
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                c.imshow(tmp, cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 min_y:max_y,
-                                B_vox[2]], cmap="Greys_r")
+                                B_vox[2]]
+                tmp = np.rot90(tmp)
+                d.imshow(tmp, cmap="Greys_r")
                 canvas4.show()
             if count == 3:
                 global C
@@ -293,17 +337,24 @@ class Example(Frame):
                 coord_c.insert(0, str(C))
                 global C_vox
                 C_vox = mip2vox(C[0], C[1], theta, phi, ct_data)
-                b.imshow(ct_data[C_vox[0],
+                tmp = ct_data[C_vox[0],
                                 min_y:max_y,
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                tmp = np.fliplr(tmp)
+                b.imshow(tmp, cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 C_vox[1],
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                c.imshow(tmp, cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 min_y:max_y,
-                                C_vox[2]], cmap="Greys_r")
+                                C_vox[2]]
+                tmp = np.rot90(tmp)
+                d.imshow(tmp, cmap="Greys_r")
                 canvas4.show()
             if count == 4:
                 global D
@@ -311,17 +362,24 @@ class Example(Frame):
                 coord_d.insert(0, str(D))
                 global D_vox
                 D_vox = mip2vox(D[0], D[1], theta, phi, ct_data)
-                b.imshow(ct_data[D_vox[0],
+                tmp = ct_data[D_vox[0],
                                 min_y:max_y,
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                tmp = np.fliplr(tmp)
+                b.imshow(tmp, cmap="Greys_r")
                 canvas2.show()
-                c.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 D_vox[1],
-                                min_z:max_z], cmap="Greys_r")
+                                min_z:max_z]
+                tmp = np.rot90(tmp)
+                c.imshow(tmp, cmap="Greys_r")
                 canvas3.show()
-                d.imshow(ct_data[min_x:max_x,
+                tmp = ct_data[min_x:max_x,
                                 min_y:max_y,
-                                D_vox[2]], cmap="Greys_r")
+                                D_vox[2]]
+                tmp = np.rot90(tmp)
+                d.imshow(tmp, cmap="Greys_r")
                 canvas4.show()
             if count == 5:
                 coord_a.delete(0,12)

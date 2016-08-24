@@ -13,10 +13,10 @@ def mip2vox(x, y, theta, phi, ct):
 	start = time.clock()
 	for i in xrange(ct.shape[2]):
 	    layer = ct[::,::,i]
-	    ct[::,::,i] = (Image.fromarray(layer).rotate(-theta))
+	    ct[::,::,i] = (Image.fromarray(layer).rotate(-theta, resample=Image.BILINEAR))
 	for j in xrange(ct.shape[1]):
 		layer = ct[::,j,::]
-		ct[::,j,::] = (Image.fromarray(layer).rotate(-phi))
+		ct[::,j,::] = (Image.fromarray(layer).rotate(-phi, resample=Image.BILINEAR))
 	print 'Rotating took: %s ms' % ((time.clock()-start)*1000)
 	start_2 = time.clock()
 	y = y_lim-y
